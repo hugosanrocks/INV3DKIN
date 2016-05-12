@@ -4,7 +4,7 @@ include ../install/make.hugo-PC.inc
 all : FWI_INV3DKIN FORWARD PREPROC_GEODG
 
 BASE_DIR        =      ../..
-INV_BASE_DIR    =      $(BASE_DIR)/codes_frequency
+INV_BASE_DIR    =      $(BASE_DIR)/INV3DKIN
 PREPROC_DIR     =      $(INV_BASE_DIR)/preprocess
 INV_GENERAL_DIR =      $(INV_BASE_DIR)/general
 FILTER_DIR      =      $(INV_BASE_DIR)/filtro/test
