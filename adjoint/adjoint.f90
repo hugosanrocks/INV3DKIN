@@ -58,8 +58,11 @@
          call cpu_time(fini)
          print *, 'Time for adjoint:', fini-start
 
-         !do i=1,green_mesh%lensyn
-         !write(100,*) i,green_mesh%tottrac(i,:)
-         !enddo
-         
+         do i=1,green_mesh%interp_i
+         write(100,*) green_mesh%tottrac(i,1:3)
+         enddo
+       do i=1,green_mesh%interp_i
+       write(88,*) green_mesh%tottrac(i,1:3)
+       enddo
+
       end subroutine adjoint

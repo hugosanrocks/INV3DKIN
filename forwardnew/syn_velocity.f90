@@ -36,13 +36,82 @@
 
        !Time delay due to origin time green_mesh%ot
        green_mesh%delays=green_mesh%ot/(green_mesh%slipdt)
-       
+
+ 
+!       call contime(green_mesh)
+     
        call confft(green_mesh)
 
 
 
 
       end subroutine syn_velo
+
+
+      subroutine read_time(green_mesh)
+
+       !COMMON VARIABLES
+       IMPLICIT NONE
+       INCLUDE 'green.h'
+       TYPE (mesh) :: green_mesh
+
+       integer bit, iunit, i
+       integer*8 reclent
+
+       ! Bytes used for each element of traction vector (frequency)
+       INQUIRE(iolength=bit) green_mesh%tracf(1,1)
+       ! Total bytes used for traction matrix (frequency)
+       reclent=bit*green_mesh%ncomp*green_mesh%lensynf*green_mesh%stcomp*green_mesh%msub
+
+       iunit=16
+       OPEN(iunit,file='dat/TRACT_time.bin',status='unknown',&
+ &          form='unformatted',ACCESS='DIRECT',recl=reclent)
+         read(iunit,rec=1) green_mesh%tractionvec(:,:)
+         !read(iunit,rec=green_mesh%tfft_i) green_mesh%tracf(:,:)
+         !do i=1,green_mesh%lensynf
+         !   write(15,*) green_mesh%tracf(i,1)
+         !enddo
+       close(iunit)
+
+      end subroutine read_time
+
+
+
+      subroutine contime(green_mesh)
+
+       !COMMON VARIABLES
+       IMPLICIT NONE
+       INCLUDE 'green.h'
+       TYPE (mesh) :: green_mesh
+       ! FFT Library
+
+      integer i, j, k, ii, jj, cont, m
+      real, dimension(:), allocatable :: x, y
+
+      allocate(x(green_mesh%interp_i),y(green_mesh%interp_i))
+
+!        do j=1,3   !Loop over 3 traction components
+!         !store residual vector at variable 'x'
+!         do i=1,green_mesh%slipsam
+!          x(i)=green_mesh%slipr(i+njump,j)
+!         enddo
+!         !store traction vector at variable 'y'
+!         do i=1,green_mesh%interp_i
+!          read(iunit,rec=i+ijcomp+ijsub) green_mesh%traction
+!          y(i)=green_mesh%traction(j)
+!         enddo
+!         !Convolve slip rate model with the Green functions
+!         call conv(x,green_mesh%slipsam,y,green_mesh%interp_i,&
+!  &                z,green_mesh%lensyn)
+!
+!         !Discrete convolution term
+!         z(:)=z(:)*green_mesh%slipdt*scalfac
+!         !Stack the three convolutions X, Y, Z
+!         green_mesh%syn(:,k)=green_mesh%syn(:,k)+z(:)
+!        enddo     !Loop over 3 traction components
+
+
+      endsubroutine contime
 
 
 
@@ -61,7 +130,7 @@
        INQUIRE(iolength=bit) green_mesh%tracf(1,1)
        ! Total bytes used for traction matrix (frequency)
        reclent=bit*green_mesh%ncomp*green_mesh%lensynf*green_mesh%stcomp*green_mesh%msub
-       print *,reclent
+
        iunit=16
        OPEN(iunit,file='dat/TRACT_fft.bin',status='unknown',&
  &          form='unformatted',ACCESS='DIRECT',recl=reclent)
