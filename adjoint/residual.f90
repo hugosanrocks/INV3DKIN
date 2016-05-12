@@ -31,23 +31,24 @@
 
       !Flush residual array
       green_mesh%res(:,:)=0.d0
-
+      
       !Flush the cost function before computation
       green_mesh%costa=0.d0
-
+      
       green_mesh%res(:,:) = green_mesh%syn(:,:) - green_mesh%obs(:,:)
-    
+      
       !Multiply by data covariance matrix (Weighting factors)
       call prod_res(green_mesh)
       
       !Time reverse for adjoint force
-      call order_inv(green_mesh%res,green_mesh%interpadj_i,green_mesh%stcomp)
- 
+      call order_inv(green_mesh%res,green_mesh%interp_i,green_mesh%stcomp)
+      
       !Print only if you want to check
       !call write_residual(green_mesh)
 
-      !Transform to the frequency domain
-      call resi_fft(green_mesh)
+      !Transform residuals to Frequency domain
+      !turn off this if convolutions are done in tme
+      !call resi_fft(green_mesh)
 
       end subroutine residual
 

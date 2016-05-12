@@ -32,39 +32,65 @@
 
 !     Variables needed only by this program
       integer i, j, k, m, iunit
-      real start, fini, progres
+      real progres, start, fini
+
+       !Time delay due to origin time green_mesh%ot
+       green_mesh%delays=green_mesh%ot/(green_mesh%slipdt)
 
        !Flush the array of synthetics
        green_mesh%syn(:,:) = 0.
 
-       !Read tractions in the frequency domain
-       call read_fft(green_mesh)
 
-       call cpu_time(start)
-       k = 1
-       !write(*,'(a)')'----------100%'
+       !Read traciton in time domain
+       call read_time(green_mesh)
+       !USED ONLY TO CHECK WRITING AND READING
+       !do i=1,green_mesh%interp_i
+       ! write(123,*) green_mesh%tractionvec(i,22:24)
+       !enddo
+
+       k=1
        do i=1,green_mesh%msub          !number of subfaults  
-         green_mesh%tfft_i = i
          !Arrange model (slip)
          do j=1,green_mesh%ncomp
           do m=1,green_mesh%interp_i
-           green_mesh%slipr(m,j) = green_mesh%model(k)
+           green_mesh%slip(m,j+(i-1)*3) = green_mesh%model(k)
            k = k + 1
           enddo
          enddo
-         call slipfft(green_mesh)
-        !Computation of synthetic velocity records
-         call syn_velo(green_mesh)
-         !Progress bar *********!         
-         !progres = mod(i,(green_mesh%msub/10))
-         !if (progres .eq. 0) then 
-         !call progressbar(i)
-         !endif
-         !This part is not necessary for the forward problem!
        enddo
-       call cpu_time(fini)
-       !write(*,*)
-       print *, 'time for synthetics:', fini-start
+
+       call contime(green_mesh)
+
+
+!IF CONVOLUTIONS ARE PERFORM IN FREQUENCY DOMAIN
+!       !Read tractions in the frequency domain
+!       call read_fft(green_mesh)
+
+!       call cpu_time(start)
+!       k = 1
+!       !write(*,'(a)')'----------100%'
+!       do i=1,green_mesh%msub          !number of subfaults  
+!         green_mesh%tfft_i = i
+!         !Arrange model (slip)
+!         do j=1,green_mesh%ncomp
+!          do m=1,green_mesh%interp_i
+!           green_mesh%slipr(m,j) = green_mesh%model(k)
+!           k = k + 1
+!          enddo
+!         enddo
+!         call slipfft(green_mesh)
+!        !Computation of synthetic velocity records
+!         call syn_velo(green_mesh)
+!         !Progress bar *********!         
+!         !progres = mod(i,(green_mesh%msub/10))
+!!         !if (progres .eq. 0) then 
+!         !call progressbar(i)
+!         !endif
+!         !This part is not necessary for the forward problem!
+!       enddo
+!       call cpu_time(fini)
+!       !write(*,*)
+!       !print *, 'time for synthetics:', fini-start
 
 
 !*********************************************************
@@ -79,7 +105,7 @@
 !      write(iunit,*) green_mesh%interp_i
 !      write(iunit,*) green_mesh%nsta, green_mesh%ncomp
 !      close(iunit)
-      
+      print *, 'Finish forwaard' 
 
       end subroutine forward
 

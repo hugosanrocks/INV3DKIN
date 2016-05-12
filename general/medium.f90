@@ -34,7 +34,7 @@
           !Read subfault positions (z,Vp,Vs,rho,Qp,Qs)
           read(iunit,*) medium(:,:)
             !Estimate Lame parameters at each layer	
-            mu(nlayer) = 3e10!((medium(nlayer,3)*1000.)**2)*(medium(nlayer,4)*1000.)
+            mu(nlayer) = 2.8314e10!((medium(nlayer,3)*1000.)**2)*(medium(nlayer,4)*1000.)
 !             mu(nlayer) = 3e10
             lambda(nlayer) = ((medium(nlayer,2)*1000.)**2)*(medium(nlayer,4)*1000.) - (2. * (mu(nlayer)*1000.))
          elseif (model_opt .eq. 2) then

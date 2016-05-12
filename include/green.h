@@ -6,7 +6,7 @@
        REAL*4, DIMENSION(:,:), POINTER ::  slipmod         	  ! Slip rate modulus
        
        !Synthetics, adjoint traction, residuals and observations
-       REAL*4, DIMENSION(:,:),POINTER :: syn, synt, res, obs      ! Arrays to save traces
+       REAL*4, DIMENSION(:,:),POINTER :: syn, synt, res, obs, slip      ! Arrays to save traces
 
        !Focal mechanism
        REAL*4 stk, dip, rak                                 	  ! Focal mechanism
@@ -21,12 +21,12 @@
        REAL*4, DIMENSION(:),POINTER :: cost, diag               	  ! Cost function
        REAL*4 costa, costm, lam1, lam2, lam3                   	  ! Total accumulative cost
 
-       REAL*4 moment, mu, rt, ot                           	  ! seismic moment, shear modulus, rise time, origin time
+       REAL*4 moment, mu, rt, ot, syn_sec                           	  ! seismic moment, shear modulus, rise time, origin time
 
        INTEGER*4 nsta, ncomp, msub, nsubf, lensyn, lensynf        ! Number of: stations, components and subfaults, length of traces
        INTEGER*8 stcomp, sta_i, comp_i, mjump, prog            	  ! Counter on stations, components and staXcomp, jump inside files, prog bar
 
-       INTEGER*8 simsam, slipsam, interp_i, interpadj_i      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
+       INTEGER*8 simsam, slipsam, interp_i, interpadj_i, syn_sam      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
        INTEGER*4 delays, iter                              	  ! Number of samples of delay (due to origin time), number of  iteration
        INTEGER*4 modelsize, modelsize2                      	  ! number of samples in the model to optimize
 

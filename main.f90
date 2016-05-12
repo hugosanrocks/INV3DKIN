@@ -118,12 +118,14 @@
 
       ! Compute the first synthetics associated to 
       ! initial model (vitesse.out*vslip)
+      call read_time(green_mesh)
+
       call forward(green_mesh)
 
-      IF (green_mesh%debug .eqv. .true.) THEN
+!      IF (green_mesh%debug .eqv. .true.) THEN
       ! Write first synthetics to check
-      call write_debug(green_mesh)
-      ENDIF
+!      call write_debug(green_mesh)
+!      ENDIF
 
       ! Estimate the tractions (adjoint problem) using as 
       ! forces the velocity residuals at the recievers

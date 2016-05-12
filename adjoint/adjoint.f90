@@ -42,27 +42,46 @@
 
          !read observed seismograms at stations
          call read_obs(green_mesh)
-
+ 
          !Compute residuals for all stations and components
-         call residual(green_mesh)
-         print *, 'Finish residual estimation'
+        call residual(green_mesh)
 
          green_mesh%tottrac(:,:)=0.
 
          call cpu_time(start)
-         do i = 1,green_mesh%msub
-           !Jump inside traction files for m-subfaults
-           green_mesh%tfft_i = i
-           call adj_trac(green_mesh)
-         enddo
+         call conadjtime(green_mesh)
          call cpu_time(fini)
          print *, 'Time for adjoint:', fini-start
 
+         !USED ONLY TO CHECK ADJOINT PROBLEM
          do i=1,green_mesh%interp_i
-         write(100,*) green_mesh%tottrac(i,1:3)
+         write(89,*) green_mesh%tottrac(i,1:3)
          enddo
-       do i=1,green_mesh%interp_i
-       write(88,*) green_mesh%tottrac(i,1:3)
-       enddo
 
+
+          !ADJOINT PROBLEM IN THE FREQUENCY DOMAIN
+!         green_mesh%tottrac(:,:)=0.
+
+!         call cpu_time(start)
+!         do i = 1,green_mesh%msub
+!           !Jump inside traction files for m-subfaults
+!           green_mesh%tfft_i = i
+!           call adj_trac(green_mesh)
+!         enddo
+!         call cpu_time(fini)
+!         print *, 'Time for adjoint:', fini-start
+
+        !USED ONLY TO CHECK ADJOINT PROBLEM IN FREQUENCY DOMAIN
+!       do i=1,green_mesh%interp_i
+!       write(88,*) green_mesh%tottrac(i,1:3)
+!       enddo
+
+         !do i=1,green_mesh%lensyn
+         !write(100,*) i,green_mesh%tottrac(i,:)
+         !enddo
+
+
+
+
+         
       end subroutine adjoint

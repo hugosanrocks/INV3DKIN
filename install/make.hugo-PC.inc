@@ -17,8 +17,9 @@ IOPTIM  = $(LTOOLS_BOX)/OPTIMIZATION/COMMON/include
 # compiler options
 #
 #FOPTION= -O3 -cpp
-FOPTION=-O3 -cpp
-## -fbounds-check -DDOUBLE_PRECISION -g -fcheck=all -Wall -fbacktrace
+FOPTION=-O3 -cpp 
+##-check bounds -check all -traceback
+##-fbounds-check -DDOUBLE_PRECISION -g -fcheck=all -Wall -fbacktrace
 CC_OPTION= -O3
 
 #

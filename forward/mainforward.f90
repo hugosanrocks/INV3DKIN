@@ -30,6 +30,7 @@
 
 !     Variables needed only by this program
       integer iunit
+      real start, fini
 !------------------------------------------------------
 
 !     Set working directories
@@ -46,6 +47,7 @@
       !Write information about synthetics
       OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
       read(iunit,*) green_mesh%for_opt
+      read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
       close(iunit)
 
 
@@ -63,7 +65,12 @@
       !Compute the forward problem and compute first synthetics
       !asociated with the first model (0 ZEROS)
       !lensyn = dimension of synthetic vectors
-      call forward(green_mesh)
+       call cpu_time(start)
+        call forward(green_mesh)
+       call cpu_time(fini)
+       write(*,*) '****************************************************'
+       print *, 'Forward modeling done in:', fini-start, 'seconds'
+       write(*,*) '****************************************************'
       
       call write_syn(green_mesh)
 
@@ -73,8 +80,19 @@
 
 
       deallocate(green_mesh%fault)
-      deallocate(green_mesh%tracf,green_mesh%slipf)
-      deallocate(green_mesh%slipmod,green_mesh%model)!
+
+      deallocate(green_mesh%slipmod)
+      deallocate(green_mesh%model,green_mesh%model2,green_mesh%grad2)
       deallocate(green_mesh%tractionvec,green_mesh%syn,green_mesh%slipr)
+      deallocate(green_mesh%slip)
+
+      deallocate(green_mesh%gradad,green_mesh%slipr2)
+      deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm)
+      deallocate(green_mesh%ce,green_mesh%ct,green_mesh%rtimes)
+      deallocate(green_mesh%diag)
+
+      !Frequency domain
+!      deallocate(green_mesh%tracf,green_mesh%slipf)
+
 
       end program main_forward

@@ -23,10 +23,16 @@
          !Compute residuals for all stations and components
          call residual(green_mesh)
 
-         do i = 1,green_mesh%msub
-           green_mesh%tfft_i = i
-           call adj_trac(green_mesh)
-         enddo
+!IN FREQUENCY DOMAIN
+!         do i = 1,green_mesh%msub
+!           green_mesh%tfft_i = i
+!           call adj_trac(green_mesh)
+!         enddo
+!FREQUENCY DOMAIN
+
+!      TIME DOMAIN GRADIENT COMPUTATION
+       call conadjtime(green_mesh)
+
 
        green_mesh%grad2(:)=0.
        g(:)=0.
@@ -63,6 +69,7 @@
        !print *, 'costa', green_mesh%costa, 'cost time', green_mesh%costm
        !green_mesh%costa = green_mesh%costa + green_mesh%lam2*green_mesh%costm
        !green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam2*green_mesh%gradad(:)
+       print *, green_mesh%costa
 
       ! do i=1,green_mesh%modelsize2
       !   write(81,*) green_mesh%model2(i)

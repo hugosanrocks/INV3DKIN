@@ -69,54 +69,69 @@
       green_mesh%debug = .false. 
 
 
-!Coordinate transformation (strike,dip,rake) to (x,y,z)
+      !1 Coordinate transformation (strike,dip,rake) to (x,y,z)
       allocate(green_mesh%fault(green_mesh%msub,3))
-
-      !slipmod = matrix containing slip module for each subfualt
+      !2 slipmod = matrix containing slip module for each subfualt
       allocate(green_mesh%slipmod(green_mesh%slipsam,green_mesh%msub))
+      !1D vectors used for optimization toolbox
+      green_mesh%modelsize=green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
+      green_mesh%modelsize2=green_mesh%interp_i*2*green_mesh%msub
+      !3 4 5
+      allocate(green_mesh%model(green_mesh%modelsize))
+      allocate(green_mesh%model2(green_mesh%modelsize2))
+      allocate(green_mesh%grad2(green_mesh%modelsize2))
+
       !slipr = matrix with (x,y,z) slip components for only 1 subfault
+      !6
       allocate(green_mesh%slipr(green_mesh%interp_i,green_mesh%ncomp))
-      !tractionvec = matrix containing all traction vectors for only 1 subfault
-      allocate(green_mesh%tractionvec(&
-  &   green_mesh%interp_i*green_mesh%nsta*green_mesh%ncomp,green_mesh%ncomp))
+      !7 Matrix with slip-rate time history in 3D for all subfaults
+      allocate(green_mesh%slip(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
+
+      !8 tractionvec = matrix containing all traction vectors for only 1 subfault
+      allocate(green_mesh%tractionvec(green_mesh%interp_i,&
+  &            green_mesh%nsta*green_mesh%ncomp*green_mesh%ncomp*green_mesh%msub))
 
       !Forward variables
       !lensyn = dimension of synthetic vectors
       !lensynf = dimension of synthetics in frequency
       !stcomp = total number of synthetics
       green_mesh%lensyn=green_mesh%interp_i+green_mesh%interp_i-1
-      green_mesh%lensynf = (green_mesh%lensyn / 2) + 1
       green_mesh%stcomp=green_mesh%nsta*green_mesh%ncomp
 
+!=====TERMS USED IF CONVOLUTION PERFORMED IN THE FREQUENCY DOMAIN============!
+!      green_mesh%lensynf = (green_mesh%lensyn / 2) + 1
       !tracf = traction matraix containing all traction vectors (frequency)
-      allocate(green_mesh%tracf(green_mesh%lensynf,&
-  &   green_mesh%stcomp*green_mesh%ncomp*green_mesh%msub))
-      !slipf = matrix containing slip vectors (frequency) for only 1 subfault
-      allocate(green_mesh%slipf(green_mesh%lensynf,green_mesh%ncomp))
+!      allocate(green_mesh%tracf(green_mesh%lensynf,&
+!  &   green_mesh%stcomp*green_mesh%ncomp*green_mesh%msub))
+!     !slipf = matrix containing slip vectors (frequency) for only 1 subfault
+!      allocate(green_mesh%slipf(green_mesh%lensynf,green_mesh%ncomp))
       !syn = matrix to store synthetic seismograms at receivers (time)
-!      allocate(green_mesh%syn(green_mesh%lensyn,green_mesh%stcomp))
-      allocate(green_mesh%syn(green_mesh%interp_i,green_mesh%stcomp))
-      !model = 1D vector containing slip histories, used for OPTIMIZATION
-      green_mesh%modelsize=green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
-      green_mesh%modelsize2=green_mesh%interp_i*2*green_mesh%msub
-      allocate(green_mesh%model(green_mesh%modelsize))
-      allocate(green_mesh%model2(green_mesh%modelsize2))
-      allocate(green_mesh%grad2(green_mesh%modelsize2))
+!============================================================================!
 
+      !9
+      allocate(green_mesh%syn(green_mesh%interp_i,green_mesh%stcomp))   !interp_i = syn_sam
+      !10
       allocate(green_mesh%gradad(green_mesh%modelsize2))
       !allocate(green_mesh%tracad(green_mesh%lensyn, green_mesh%msub*2))
-
+      !11
       allocate(green_mesh%slipr2(green_mesh%interp_i,green_mesh%msub*2))
 
       !syn = matrix to store observed seismograms at receivers (time)
+      !12
       allocate(green_mesh%obs(green_mesh%interp_i,green_mesh%stcomp))
+      !13
       allocate(green_mesh%cd(green_mesh%stcomp,green_mesh%stcomp))
-
-      allocate(green_mesh%cm(green_mesh%msub,green_mesh%msub))
-      allocate(green_mesh%ct(green_mesh%slipsam,green_mesh%slipsam))
-
+      !14
       allocate(green_mesh%ce(green_mesh%msub,green_mesh%msub))
-      allocate(green_mesh%rtimes(green_mesh%msub),green_mesh%rsamp(green_mesh%msub))
+      !15
+      allocate(green_mesh%cm(green_mesh%msub,green_mesh%msub))
+      !16
+      allocate(green_mesh%ct(green_mesh%slipsam,green_mesh%slipsam))
+      !17
+      allocate(green_mesh%rtimes(green_mesh%msub))
+      !18
+      allocate(green_mesh%rsamp(green_mesh%msub))
+      !19
       allocate(green_mesh%diag(288*875))
 
       end subroutine initialize
@@ -134,17 +149,14 @@
 
       integer iunit
 
+      iunit = 25
+      open(iunit,file=green_mesh%out//'debug_data.ascii',status='unknown')
+
       IF (green_mesh%debug_i .eq. 1) then
       GO TO 111
-      ELSEIF (green_mesh%debug_i .eq. 2) then
-      GO TO 222
       ELSEIF (green_mesh%debug_i .eq. 3) then
       GO TO 333
       ENDIF
-
-      iunit = 15
-
-      open(iunit,file='debug_data.ascii',status='unknown')
 
  111   write(iunit,*) green_mesh%rt, green_mesh%ot
        write(iunit,*) green_mesh%nsta, green_mesh%ncomp, green_mesh%msub
@@ -157,19 +169,14 @@
        write(iunit,*) 'Seismic Moment', green_mesh%moment
        write(iunit,*) 'Slip rate samples and slipdt', &
   &                   green_mesh%slipsam, green_mesh%slipdt
-
-      GO TO 999
-
-
- 222  call write_syn(green_mesh)
+       close(iunit)
       GO TO 999
 
  333  write(iunit,*) 'Normal vector', green_mesh%vnorm
       write(iunit,*) 'Slip vector', green_mesh%vslip
       write(iunit,*) 'Strike vector', green_mesh%vstk
+      close(iunit)
       GO TO 999
-
-      
 
  999  return
       end subroutine write_debug
@@ -183,20 +190,33 @@
       INCLUDE 'green.h'
       TYPE (mesh) :: green_mesh
 
-      deallocate(green_mesh%rtimes,green_mesh%rsamp)
-      deallocate(green_mesh%gradad)
-!      deallocate(green_mesh%tracad)
-      deallocate(green_mesh%slipr2)
-      deallocate(green_mesh%fault)
-      deallocate(green_mesh%tracf,green_mesh%slipf)
-      deallocate(green_mesh%slipmod,green_mesh%model,green_mesh%model2)!
-      deallocate(green_mesh%tractionvec,green_mesh%syn,green_mesh%slipr)
+      deallocate(green_mesh%fault)       !1
+      deallocate(green_mesh%slipmod)     !2
+      deallocate(green_mesh%model)       !3
+      deallocate(green_mesh%model2)      !4
+      deallocate(green_mesh%grad2)       !5
+      deallocate(green_mesh%slipr)       !6
+      deallocate(green_mesh%slip)        !7
+      deallocate(green_mesh%tractionvec) !8
+      deallocate(green_mesh%syn)         !9
+      deallocate(green_mesh%gradad)      !10
+      deallocate(green_mesh%slipr2)      !11
+      deallocate(green_mesh%obs)         !12
+      deallocate(green_mesh%cd,green_mesh%ce,green_mesh%cm)
+      deallocate(green_mesh%ct)          !13,14,15,16
+      deallocate(green_mesh%rtimes)      !17
+      deallocate(green_mesh%rsamp)       !18
+      deallocate(green_mesh%diag)        !19
+
+      !From initialadj
       deallocate(green_mesh%cost)
-      deallocate(green_mesh%res,green_mesh%tottrac)
-      deallocate(green_mesh%resif)
-      deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm,green_mesh%ce)
-      deallocate(green_mesh%grad2)
-      deallocate(green_mesh%diag)
-      deallocate(green_mesh%ct)
+      deallocate(green_mesh%res)
+      deallocate(green_mesh%tottrac)
+
+      !Frequency domain arrays
+!      deallocate(green_mesh%resif)
+!      deallocate(green_mesh%tracad)
+!      deallocate(green_mesh%tracf,green_mesh%slipf)
+
 
       end subroutine destroy_arrays

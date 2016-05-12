@@ -10,7 +10,7 @@
       type (optim_type) :: optim
 
 !     Variables needed only here
-      integer :: n                                 ! dimension of the problem
+      integer :: n, i                                 ! dimension of the problem
       real,dimension(:),allocatable :: grad_preco  ! current gradient
       character*4 :: FLAG                          ! communication FLAG 
 
@@ -39,6 +39,10 @@
   ! linesearch not failed, iterate                     !
   !----------------------------------------------------
   !call model_check(green_mesh)
+
+  do i=1,green_mesh%modelsize2
+    write(77,*) green_mesh%model(i), green_mesh%grad2(i)
+  enddo
 !
    do while ((FLAG.ne.'CONV').and.(FLAG.ne.'FAIL'))
      call PLBFGS(n,green_mesh%model2,green_mesh%costa,green_mesh%grad2,grad_preco,optim,FLAG)

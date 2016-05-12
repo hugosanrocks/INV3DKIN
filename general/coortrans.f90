@@ -53,15 +53,8 @@
          green_mesh%vdip(2)= -1.*(green_mesh%vstk(1)*green_mesh%vnorm(3)-green_mesh%vnorm(1)*green_mesh%vstk(3))
          green_mesh%vdip(3)= green_mesh%vstk(1)*green_mesh%vnorm(2)-green_mesh%vnorm(1)*green_mesh%vstk(2)
 
-         !Decomposition matrix along strike and dip
-         print *, green_mesh%vslip, 'vslip 3D'
-         print *, green_mesh%vstk, 'vstk'
-         print *, green_mesh%vdip, 'vdip'
-
          green_mesh%slipm(1,:) = green_mesh%vstk(:)
          green_mesh%slipm(2,:) = green_mesh%vdip(:)
-
-
 
          !Decompose slip vector along strike and dip
          green_mesh%vslip2(:)=0.
@@ -71,31 +64,20 @@
           enddo
          enddo
 
-         print *, green_mesh%vslip2, '2D'
+         !Print only to check decompositon along strike and dip
+         write(6,*) ' Slip vector    :', green_mesh%vslip
+         write(6,*) ' Strike vector  :', green_mesh%vstk
+         write(6,*) ' Dip vector     :', green_mesh%vdip
+         write(6,*) ' 2D Slip vector :', green_mesh%vslip2
 
 
-!================MKL=======================
-!       vs3(1,:) = green_mesh%vslip(:)
-!       vm(:,1) = green_mesh%slipm(1,:)
-!       vm(:,2) = green_mesh%slipm(2,:)
-!       al = 1.d0
-!       be = 0.d0
-!       call PrintMatrix(vs3, 1,3)
-!       call PrintMatrix(vm, 3, 2)
-!       call sgemm('N','N',1,2,3,al,        &
-!      &     vs3,1,vm,3,be,res,1)
-!       call PrintMatrix(res, 1, 2)
-!===================MKL====================
-
-         !File where to read the slip-rate from
-         iunit=10
+         !Read the slip-rate initial model (modulus of vector)
+         iunit=30
          open(iunit,file=green_mesh%dat//'vitesse.out',status='unknown',action='read')
-
-         print *, green_mesh%slipsam
-         !Read slip rate modulus
          do i=1,green_mesh%slipsam
           read(iunit,*) green_mesh%slipmod(i,:)
          enddo
+         close(iunit)
 
          !Arrange slip rate model in 1D vector
          l = 1
@@ -109,36 +91,11 @@
           enddo
          enddo
 
-        !call exp_covar(green_mesh)
-
-        !To check model contribution to gradient
-        !call model1d(green_mesh)
-
-
 
         !Change slip vector model from along stk and dip to (x,y,z)
         call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
         
 
-        close(iunit)
-
-
 
          endsubroutine coor_trans
 
-
-
-        subroutine PrintMatrix(pMatrix,nRows,nCols)
-        implicit none
-        integer            :: i, j, nRows, nCols
-        real   :: pMatrix(nRows,nCols)
- 
-        do i=1,nRows
-          do j=1,nCols
-            print *,i,j,pMatrix(i,j)
-          enddo
-        enddo
- 
-        print *," "
-        return
-        endsubroutine PrintMatrix

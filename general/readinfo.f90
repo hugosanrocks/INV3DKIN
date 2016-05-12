@@ -12,10 +12,11 @@
       ! Directory containing output data files
       green_mesh%out='out/'
 
-      iunit=10
+      iunit=20
       ! Read simulation information
 
-      print *, 'Reading simul.info'
+      write(6,*) '==============================================='
+      write(6,*) ' Reading input information '
       open(iunit,file=green_mesh%dat//'simul.info',&
   &        status='old',action='read')
        read(iunit,*) green_mesh%rt, green_mesh%ot
@@ -26,7 +27,9 @@
        read(iunit,*) green_mesh%prog
       close(iunit)
 
+      iunit=21
       !Read focal mechanism information 
+      write(6,*) ' Reading focal mechanism '
       open(iunit,file=green_mesh%dat//'focal.info',&
   &        status='old',action='read')
        read(iunit,*) green_mesh%stk, green_mesh%dip, green_mesh%rak
@@ -40,11 +43,13 @@
       green_mesh%dip=green_mesh%dip*(2.0*pi/360.0)
       green_mesh%rak=(green_mesh%rak*(2.0*pi/360.0))
 
+      iunit = 22
       ! Read slip rate point source information
+      write(6,*) ' Reading inital model '
       open(iunit,file=green_mesh%dat//'sliprate.info',status='old',action='read')
        read(iunit,*) green_mesh%slipsam, green_mesh%slipt
        read(iunit,*) green_mesh%moment, green_mesh%mu
-      close(iunit)
+      close(22)
       green_mesh%slipdt=green_mesh%slipt/green_mesh%slipsam
 
       IF (green_mesh%debug .eqv. .true.) THEN
@@ -53,13 +58,25 @@
         call write_debug(green_mesh)
       ENDIF
 
+      iunit = 23
       !Read the option selected
-      iunit=12
+      write(6,*) ' Reading optimization options '
       open(iunit,file=green_mesh%dat//'fwioption.info',status='unknown')
       read(iunit,*) fwiopt
       read(iunit,*) niter_max
       read(iunit,*) green_mesh%weig
       close(iunit)
 
+      iunit = 24
+      !Write information about synthetics
+      write(6,*) ' Reading inforamtion for synthetics '
+      OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
+      read(iunit,*) green_mesh%for_opt
+      !For inversion ==== for_opt = 1
+      read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
+      close(iunit)
+
+      write(6,*) ' Finish reading input information '
+      write(6,*) '==============================================='
 
       end subroutine read_info

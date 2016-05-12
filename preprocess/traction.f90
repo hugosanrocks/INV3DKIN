@@ -9,25 +9,27 @@
          INCLUDE 'proc.h'
          TYPE (mesh) :: proc_mesh
 
-         INTEGER ii, jj, i, cont, cont2, m, n, iunit
+         INTEGER ii, jj, i, cont, cont2, m, n, iunit,co
          INTEGER  reclen, reclent, iunit2
-         INTEGER ijsub, ijcomp, ijump, icont
+         INTEGER ijsub, ijcomp, ijump, icont, ijcomp2, ijsub2
          INTEGER nn, nnc
          REAL t_slip
          REAL, DIMENSION(:,:), ALLOCATABLE :: tracvec
 
 
-!       ijsub = (proc_mesh%mjump / (proc_mesh%simsam*proc_mesh%nsta)) * &
-!    &          (proc_mesh%ncomp * proc_mesh%interp_i)
+       ijsub = (proc_mesh%mjump / (proc_mesh%simsam*proc_mesh%nsta)) * &
+    &          (proc_mesh%ncomp * proc_mesh%interp_i)
 
      
        !Jump to write next component
-!       ijcomp = (proc_mesh%comp_i - 1) * proc_mesh%interp_i
+       ijcomp = (proc_mesh%comp_i - 1) * proc_mesh%interp_i
 
        allocate(tracvec(3,proc_mesh%interp_i))
 
         !not used anymore
 !       icont=proc_mesh%mjump/(proc_mesh%simsam*proc_mesh%nsta)*proc_mesh%ncomp
+       ijcomp2 = proc_mesh%comp_i
+       ijsub2 = ijsub /  proc_mesh%interp_i
 
 
 !      Byte length of stress_input.bin vectors stsi (6 elements)
@@ -36,10 +38,10 @@
 
 !      PSEUDO GREE'S FUNCTIONS
 !      Binary file to store Tractions asociated to stationXXX and componentX
-!!       iunit=11
-!!       OPEN(iunit,FILE=proc_mesh%dat//'TRACT_S'//proc_mesh%sta//'.bin',&
-!!    &  status='unknown',FORM='UNFORMATTED',&
-!!    &  ACCESS='DIRECT',recl=proc_mesh%interp_i*12)!reclent)
+       iunit=11
+       OPEN(iunit,FILE=proc_mesh%dat//'TRACT_time.bin',&
+    &  status='unknown',FORM='UNFORMATTED',&
+    &  ACCESS='DIRECT',recl=proc_mesh%interp_i)!reclent)
 
        m=3                     !rows of stress tensor
        n=3                     !columns of stress tensor and elements of v normal
@@ -109,12 +111,30 @@
        !Save traction in frequency domain
        nn=proc_mesh%interp_i + proc_mesh%interp_i -1
        nnc=(nn /2) + 1
-       !print *, nn,nnc !CHECK size of arrays
+
+       !Write pseudo Green's function in time domain
+       co = 1 + ((proc_mesh%tfft_i-1)*proc_mesh%ncomp)
+       do i=1,proc_mesh%ncomp
+       !used only to check elements of traction and how they are saved
+       !print *, co, proc_mesh%sta_i, proc_mesh%comp_i, 'time'
+       write(iunit,rec=co) tracvec(i,1:proc_mesh%interp_i)
+       co = co + 1
+       enddo
+
+       !USED ONLY TO CHECK WRITING AND READING
+       !if ((proc_mesh%sta_i .eq. 3) .and. (proc_mesh%comp_i .eq. 2)) then
+       !do i=1,proc_mesh%interp_i
+       ! write(122,*) tracvec(:,i)
+       !enddo
+       !endif
+
        !do i=1,proc_mesh%interp_i
        ! write(555,*)i, tracvec(:,i)
        !enddo
+
+       !IF YOU WANT TO SAVE TRACTION ON THE FREQUENCY DOMAIN TURN ON THIS
        !Save traction in the frequency domain
-       call tractfft(proc_mesh,tracvec,nn,nnc,proc_mesh%tfft_i)
+       !call tractfft(proc_mesh,tracvec,nn,nnc,proc_mesh%tfft_i)
 
 
        deallocate(tracvec)

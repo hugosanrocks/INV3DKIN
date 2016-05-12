@@ -51,7 +51,14 @@
        green_mesh%delays=green_mesh%ot/green_mesh%slipdt
 
        !Flush the array
-       green_mesh%synt(:,:)=0.
+       green_mesh%synt(:,:) = 0.
+!       green_mesh%tottrac(:,:) = 0.
+
+!       call conadjtime(green_mesh)
+
+!       do i=1,green_mesh%interp_i
+!       write(89,*) green_mesh%tottrac(i,210)
+!       enddo
 
        call conadjfft(green_mesh)
 
@@ -60,16 +67,85 @@
        !print *, start, fin, green_mesh%tfft_i
        !Save the total traction
        ki=green_mesh%interp_i+green_mesh%delays
-       !do i=1,green_mesh%interp_i
        do i=1,green_mesh%interp_i
         green_mesh%tottrac(i,start:fin) = green_mesh%synt(ki,:)
         ki=ki-1
         kx=kx-1
        enddo
 
-
   
       end subroutine adj_trac
+
+
+
+
+
+
+      subroutine conadjtime(green_mesh)
+
+       !COMMON VARIABLES
+       IMPLICIT NONE
+       INCLUDE 'green.h'
+       TYPE (mesh) :: green_mesh
+       ! FFT Library
+
+      integer i, j, k, ii, jj, kk, mm, cont, m, p
+      real scalfac
+      real, dimension(:), allocatable :: x, y, z
+      real, dimension(:,:), allocatable :: tottrac
+
+      scalfac=green_mesh%moment/(green_mesh%msub)
+
+      allocate(x(green_mesh%interp_i),y(green_mesh%interp_i),z(green_mesh%lensyn))
+      allocate(tottrac(green_mesh%interp_i,green_mesh%msub*green_mesh%ncomp))
+
+      tottrac(:,:) = 0.
+
+      cont = 1
+       do i=1,green_mesh%msub
+        do j=1,green_mesh%nsta
+        do m=1,green_mesh%ncomp
+         do k=1,green_mesh%ncomp   !Loop over 3 traction components
+          ii = m + (j-1)*3
+          jj = m + (j-1)*3
+          kk = k + (j-1)*3 + (j-1)*green_mesh%ncomp*green_mesh%ncomp+(i-1)*green_mesh%stcomp*3
+          mm = k + (i-1)*3
+!          used to check elements to be convolved
+!          print *, 'res', ii, 'conv tract', cont, 'adj', mm, 'time'
+          x(:) = green_mesh%res(:,ii) 
+          y(:) = green_mesh%tractionvec(:,cont) 
+!         !Convolve slip rate model with the Green functions
+          call conv(x,green_mesh%interp_i,y,green_mesh%interp_i,&
+  &                z,green_mesh%lensyn)
+!         !Discrete convolution term
+          z(:)=z(:)*green_mesh%slipdt*scalfac
+!          do p=1,green_mesh%interp_i
+!           write(15,*) z(green_mesh%delays+p)
+!          enddo
+!         !Stack the three convolutions X, Y, Z
+         tottrac(:,mm)= tottrac(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%interp_i)
+         cont = cont + 1
+         enddo     !Loop over 3 traction components
+        enddo
+       enddo
+      enddo
+
+      k = green_mesh%interp_i
+      do i=1,green_mesh%interp_i
+       green_mesh%tottrac(i,:) = tottrac(k,:)
+       k = k - 1
+      enddo
+
+
+      deallocate(x,y,z)
+      deallocate(tottrac)
+      endsubroutine conadjtime
+
+
+
+
+
+
 
 
 
@@ -112,6 +188,7 @@
          inh(:) = in1(:) * in2(:) 
          cont = k
          call back_fft(green_mesh,inh,green_mesh%lensynf,green_mesh%lensyn,outr,cont)
+!         print *, 'res', j+(i-1)*green_mesh%ncomp, 'trac', kk, 'syn', cont, 'freq'
           kk = kk + 1
           enddo
           jj = jj + 1
@@ -144,7 +221,7 @@
       include "fftw3.f"
 
       integer*8 plan_backward
-      integer i
+      integer i, p
 
        !For homogeneous media, scalfac has the same mu for all subfaults
        !evereything done in preprocess stage
@@ -162,6 +239,10 @@
       !enddo
       !print *, cont, green_mesh%tfft_i
       green_mesh%synt(:,cont) = green_mesh%synt(:,cont) + (inh(:)*green_mesh%slipdt*scalfac/dble(n))
+!          do p=1,green_mesh%interp_i
+!           write(16,*) inh(p+green_mesh%delays)*green_mesh%slipdt*scalfac/dble(n)
+!          enddo
+
       !do i=1,3
       !print *, green_mesh%synt(500,i), inh(500)/dble(n)
       !enddo

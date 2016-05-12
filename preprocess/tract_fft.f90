@@ -50,7 +50,7 @@
        ! end do
 
         write(iunit,rec=cont) out(:)
-
+        print *, cont, proc_mesh%sta_i, proc_mesh%comp_i, 'freq'
 
         !print *, 'rec=saved',cont
      ! call sfftw_plan_dft_c2r_1d_ ( plan_backward, n, out, in2,&

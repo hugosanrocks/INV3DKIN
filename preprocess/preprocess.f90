@@ -92,8 +92,9 @@
          enddo
       enddo
       call cpu_time(stop)
-      print *, 'Time of preprocess: ', stop-start
-
+      write(6,*) '*****************************************'
+      write(6,*) 'Time used for preprocess: ', stop-start, 'seconds'
+      write(6,*) '*****************************************'
       WRITE(6, *) '================================================='
       WRITE(6, *) ' PREPROCESS FINISHED, FILES  "dat/TRACT_SXXX_CX" '
       WRITE(6, *) '================================================='

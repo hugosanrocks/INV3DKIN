@@ -71,14 +71,15 @@
       !lensynt = dimension of adjoint traction vectors
 
       !Save memory for traction arrays, total traction (gradient), cost and residuals
-      allocate(green_mesh%synt(green_mesh%lensyn,green_mesh%ncomp))
-      allocate(green_mesh%tottrac(green_mesh%lensyn,green_mesh%ncomp*green_mesh%msub))
+      allocate(green_mesh%tottrac(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
       !allocate(green_mesh%tracad(green_mesh%lensyn,green_mesh%ncomp*green_mesh%msub))
       allocate(green_mesh%cost(green_mesh%ncomp*green_mesh%nsta))
       allocate(green_mesh%res(green_mesh%interp_i,green_mesh%stcomp))
 
+      !FREQUENCY DOMAIN ARRAYS
       !Residual in frequency domain
-      allocate(green_mesh%resif(green_mesh%lensynf,green_mesh%stcomp))
+      !allocate(green_mesh%resif(green_mesh%lensynf,green_mesh%stcomp))
+      !allocate(green_mesh%synt(green_mesh%lensyn,green_mesh%ncomp))
 
       !Read simulation, sliprate and adjoint problem info
       call read_adjinfo(green_mesh)

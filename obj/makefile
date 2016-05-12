@@ -4,7 +4,7 @@ include ../install/make.hugo-PC.inc
 all : FWI_INV3DKIN FORWARD PREPROC_GEODG
 
 BASE_DIR        =      ../..
-INV_BASE_DIR    =      $(BASE_DIR)/INV3DKIN
+INV_BASE_DIR    =      $(BASE_DIR)/codes_frequency
 PREPROC_DIR     =      $(INV_BASE_DIR)/preprocess
 INV_GENERAL_DIR =      $(INV_BASE_DIR)/general
 FILTER_DIR      =      $(INV_BASE_DIR)/filtro/test
@@ -52,17 +52,17 @@ PRE_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) linreg.o prep.o rotate.o
 
 .SUFFIXES: .f90 .o
 .f90.o:
-	$(F90) -c  $(FFLAGS) $<
+	$(F90) -openmp -c  $(FFLAGS) $<
 
 .SUFFIXES: .c .o
 .c.o:
 	$(CC) -c $(C_OPTION) $(FFLAGS) $<
 
 PREPROC_GEODG : $(PRE_OBJ)
-	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(PRE_OBJ) $(LIBS2)
+	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(PRE_OBJ) $(LIBS2) -openmp
 
 FORWARD : $(FOR_OBJ)
-	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2)
+	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2) -openmp
 
 FWI_INV3DKIN : $(ALL_OBJ)
 	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(ALL_OBJ) $(LIBS) $(LIBS2) $(LIBS3)
