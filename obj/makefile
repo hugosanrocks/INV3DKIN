@@ -18,10 +18,11 @@ INV_EXE_DIR     =      $(INV_BASE_DIR)/bin
 VPATH = $(BASE_DIR):$(INV_BASE_DIR):$(PREPROC_DIR):$(FILTER_DIR):$(INV_GENERAL_DIR):$(INV_EXE_DIR):$(COV_INV_DIR):$(FWI_INV_DIR):$(FOR_INV_DIR):$(ADJ_INV_DIR)
 
 FFLAGS    = -I. -I $(INV_INC_DIR) -I $(IOPTIM) $(FOPTION)
+FFLAGS2   = -openmp
 
 #first : test_Connect1D
 
-COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o covedge.o modeledge.o timemask.o modeltime.o covtime.o
+COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o time_corr.o covedge.o modeledge.o timemask.o modeltime.o covtime.o covtimer.o modeltimer.o
 
 FILTER_OBJ  =  init_butterworth.o filtfilt_butterworth.o
 
@@ -39,7 +40,7 @@ MAIN_OBJ  = main.o
 
 FORWARD_OBJ = readinfo.o coortrans.o forward.o syn_velocity.o write_syn.o progress.o
 
-ADJOINT_OBJ = adjoint.o residual.o write_residual.o adjtraction.o read_traction.o
+ADJOINT_OBJ = adjoint.o residual.o write_residual.o adjtraction.o read_traction.o read_obs2.o
 
 MODEL_GRAD_OBJ = writemodel.o newgrad.o readgrad.o
 
@@ -51,7 +52,7 @@ PRE_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) linreg.o prep.o rotate.o
 
 .SUFFIXES: .f90 .o
 .f90.o:
-	$(F90) -c $(FFLAGS) $<
+	$(F90) -c  $(FFLAGS) $<
 
 .SUFFIXES: .c .o
 .c.o:
@@ -61,7 +62,7 @@ PREPROC_GEODG : $(PRE_OBJ)
 	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(PRE_OBJ) $(LIBS2)
 
 FORWARD : $(FOR_OBJ)
-	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2) 
+	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2)
 
 FWI_INV3DKIN : $(ALL_OBJ)
 	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(ALL_OBJ) $(LIBS) $(LIBS2) $(LIBS3)

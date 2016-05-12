@@ -113,9 +113,11 @@
       allocate(green_mesh%cd(green_mesh%stcomp,green_mesh%stcomp))
 
       allocate(green_mesh%cm(green_mesh%msub,green_mesh%msub))
+      allocate(green_mesh%ct(green_mesh%slipsam,green_mesh%slipsam))
+
       allocate(green_mesh%ce(green_mesh%msub,green_mesh%msub))
       allocate(green_mesh%rtimes(green_mesh%msub),green_mesh%rsamp(green_mesh%msub))
-
+      allocate(green_mesh%diag(288*875))
 
       end subroutine initialize
 
@@ -194,5 +196,7 @@
       deallocate(green_mesh%resif)
       deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm,green_mesh%ce)
       deallocate(green_mesh%grad2)
-     
+      deallocate(green_mesh%diag)
+      deallocate(green_mesh%ct)
+
       end subroutine destroy_arrays

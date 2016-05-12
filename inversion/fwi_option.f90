@@ -49,7 +49,7 @@
       read(iunit,*) fwiopt
       read(iunit,*) optim%niter_max
       read(iunit,*) green_mesh%weig
-      read(iunit,*) green_mesh%lam
+      read(iunit,*) green_mesh%lam1, green_mesh%lam2, green_mesh%lam3
       close(iunit)
 
       if (fwiopt .eq. 1) then

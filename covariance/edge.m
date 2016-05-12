@@ -4,7 +4,7 @@ clc
 
 x=1:24;
 y=1:12;
-distc=2; %0.2 original
+distc=1.3; %0.2 original
 
 for i=1:24
  dx1(i)= exp(-1*(x(i) - x(1))/ distc);

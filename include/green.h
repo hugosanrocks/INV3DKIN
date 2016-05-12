@@ -18,8 +18,8 @@
        REAL*4, DIMENSION(:,:),POINTER :: fault                    ! Position of each subfault
 
        REAL*4 simt, simdt, slipt, slipdt                 	  !Simulation t and dt (Green's functions), slip t and dt (to find)
-       REAL*4, DIMENSION(:),POINTER :: cost               	  ! Cost function
-       REAL*4 costa, costm, lam                                        	  ! Total accumulative cost
+       REAL*4, DIMENSION(:),POINTER :: cost, diag               	  ! Cost function
+       REAL*4 costa, costm, lam1, lam2, lam3                   	  ! Total accumulative cost
 
        REAL*4 moment, mu, rt, ot                           	  ! seismic moment, shear modulus, rise time, origin time
 
@@ -49,7 +49,7 @@
        LOGICAL debug         
 
 
-       REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce                  ! Arrays to covariance matrices
+       REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce, ct                  ! Arrays to covariance matrices
        INTEGER weig
 
        END TYPE mesh

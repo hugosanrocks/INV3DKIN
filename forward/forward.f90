@@ -64,7 +64,7 @@
        enddo
        call cpu_time(fini)
        !write(*,*)
-       !print *, 'time for synthetics:', fini-start
+       print *, 'time for synthetics:', fini-start
 
 
 !*********************************************************

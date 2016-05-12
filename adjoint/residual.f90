@@ -36,10 +36,7 @@
       green_mesh%costa=0.d0
 
       green_mesh%res(:,:) = green_mesh%syn(:,:) - green_mesh%obs(:,:)
-      print *, 'obs', green_mesh%obs(120,45)
-      print *, 'syn', green_mesh%syn(120,45)
-      print *, 'res', green_mesh%res(120,45)
-
+    
       !Multiply by data covariance matrix (Weighting factors)
       call prod_res(green_mesh)
       

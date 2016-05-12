@@ -30,7 +30,8 @@
              !Multiplication of matrices 
             call sgemm('N','N',1,1,mm,al,        &
       &       vec2,1,res,mm,be,cres,mm)
-            green_mesh%costm = green_mesh%costm + cres(1,1)
+           ! print *, 'cres', cres
+           green_mesh%costm = green_mesh%costm + cres(1,1)
            green_mesh%slipr2(j,m:n) = res(1:mm,1)
           enddo
          enddo
@@ -40,7 +41,6 @@
          !do i=1,green_mesh%msub
          !write(33,*) vec(i,1)
          !enddo
-         print *, 'model cost', green_mesh%costm
 
 
 

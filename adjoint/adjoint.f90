@@ -46,7 +46,7 @@
          !Compute residuals for all stations and components
          call residual(green_mesh)
          print *, 'Finish residual estimation'
-!         stop
+
          green_mesh%tottrac(:,:)=0.
 
          call cpu_time(start)
