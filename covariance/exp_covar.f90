@@ -12,7 +12,7 @@
 
         !SAME AS Mathilde Radiguet THESIS EQ (3.3) 
         !Controling parameters of covariance matrix
-        lambda = 500.     !9 km
+        lambda = 3000.!500.     !9 km
         lambda0 = 1500.     !3 km
         sigmam = 0.1    !0.5 meters
         factor = ( sigmam * (lambda / lambda0 ) )**2
@@ -30,9 +30,9 @@
          read(iunit,rec=1) green_mesh%fault(:,:)
          close(iunit)
          !Used to check the subfault positions
-         !do j=1,green_mesh%msub
-         !  write(77,*) green_mesh%fault(j,:)
-         !enddo
+         do j=1,green_mesh%msub
+           write(77,*) green_mesh%fault(j,:)
+         enddo
 
        !Estimate distance and correlation matrices
        do i=1,green_mesh%msub
@@ -44,16 +44,22 @@
         enddo
        enddo
 
-
        !Used only to check values of distance and covariance
        k=1
        do i=1,green_mesh%msub
         do j=1,green_mesh%msub
        !  write(88,*) dist(i,:)
-         write(99,*) green_mesh%cm(i,j)
-         k=k+1
+         write(999,*) green_mesh%cm(i,j)
+       !  k=k+1
         enddo
+        enddo
+
+       open(111,file='dat/corr.dat',status='unknown')
+       do i=1,green_mesh%msub
+        read(111,*) green_mesh%cm(i,:)
        enddo
+       close(111)
+
 
 
        !Travel times
@@ -61,8 +67,11 @@
        green_mesh%rtimes(:) = dist(hyp,:) / 4620. !4620 MAX velo siv1
        do i=1,green_mesh%msub
        green_mesh%rsamp(i) = floor( (dist(hyp,i) / 4620. ) / green_mesh%slipdt )
-       !write(31,*) green_mesh%rsamp(i)
+       write(31,*) green_mesh%rsamp(i)
        enddo
+       
+       
+
        call time_mask(green_mesh)
 
 

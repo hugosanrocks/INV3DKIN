@@ -108,8 +108,9 @@
       ! INITAIL FORWARD AND ADJOINT MODELING
 
       ! Initialize model covariance matrix
-!      call edge(green_mesh)
 !      call exp_covar(green_mesh)
+!      call time_corr(green_mesh)
+!      call edge(green_mesh)
 
       ! First iteration (slip-rate = vitesse.out*vslip)
       green_mesh%iter=0

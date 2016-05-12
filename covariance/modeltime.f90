@@ -1,4 +1,4 @@
-         subroutine model_time(green_mesh)
+         subroutine modeltime(green_mesh)
 
          IMPLICIT NONE
          INCLUDE 'green.h'
@@ -13,11 +13,7 @@
 
          mem(1,1) = 1
          mem(1,2) = 1+green_mesh%interp_i
-         matt(:,:) = green_mesh%slipm(:,:)
-         matt2(:,1) = matt(1,:)
-         matt2(:,2) = matt(2,:)
-         vect(1,:) = green_mesh%vslip(:)
-
+ 
          do k=1,green_mesh%interp_i
           do i=1,green_mesh%msub
             n1 = mem(1,1) + green_mesh%Interp_i*2*(i-1)+(k-1)
@@ -46,4 +42,4 @@
          enddo
 
 
-         endsubroutine model_time
+         endsubroutine modeltime

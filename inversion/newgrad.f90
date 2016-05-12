@@ -15,11 +15,10 @@
 
         !compose the slip for convolutions (x,y,z)!
         call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
-        print *, green_mesh%model2(3500), green_mesh%model(3500), 'model dc'
+ 
         allocate(g(green_mesh%msub*green_mesh%ncomp*green_mesh%interp_i))
 
          call forward(green_mesh)
-         print *, green_mesh%syn(120,45), 'syn for'
 
          !Compute residuals for all stations and components
          call residual(green_mesh)
@@ -53,15 +52,21 @@
 
        !ADDITIONAL MODEL TERM
        !Estimate cost from model term and gradient contribution
-       ! call model1d(green_mesh)
-       ! call model_edge(green_mesh)
-       !  call model_time(green_mesh)
-       ! print *, 'costa', green_mesh%costa!, 'cost time', green_mesh%costm
-       ! green_mesh%costa = green_mesh%costa + green_mesh%lam*green_mesh%costm
-       ! green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam*green_mesh%gradad(:)
-       !do i=1,green_mesh%modelsize2
-       !  write(81,*) green_mesh%model2(i)
-       !  write(83,*) green_mesh%gradad(i)
-       !enddo
+       !call modeltimer(green_mesh)
+       !call model1d(green_mesh)    !space correlation
+       !call model_edge(green_mesh)  !edge effect
+       !call modeltime(green_mesh)  !time correction
+       !print *, 'costa', green_mesh%costa, 'cost corr', green_mesh%costm
+       !green_mesh%costa = green_mesh%costa + green_mesh%lam1*green_mesh%costm
+       !green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam1*green_mesh%gradad(:)
+       !call modeltimer(green_mesh)  !time correction
+       !print *, 'costa', green_mesh%costa, 'cost time', green_mesh%costm
+       !green_mesh%costa = green_mesh%costa + green_mesh%lam2*green_mesh%costm
+       !green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam2*green_mesh%gradad(:)
+
+      ! do i=1,green_mesh%modelsize2
+      !   write(81,*) green_mesh%model2(i)
+      !   write(83,*) green_mesh%gradad(i)
+      ! enddo
 
       end subroutine new_grad
