@@ -10,7 +10,7 @@
       iunit=15
 
       ! Read adjoint problem information needed
-      print *, 'Reading adjoint information'
+      write(6,*) ' Reading adjoint information '
       !open(iunit,file=green_mesh%dat//'syn.info',status='unknown')
         !read(iunit,*) green_mesh%interpadj_i
         !read(iunit,*) green_mesh%nsta, green_mesh%ncomp

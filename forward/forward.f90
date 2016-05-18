@@ -41,13 +41,7 @@
        green_mesh%syn(:,:) = 0.
 
 
-       !Read traciton in time domain
-       call read_time(green_mesh)
-       !USED ONLY TO CHECK WRITING AND READING
-       !do i=1,green_mesh%interp_i
-       ! write(123,*) green_mesh%tractionvec(i,22:24)
-       !enddo
-
+       !Arrange the slip vector in a 3x1 vector
        k=1
        do i=1,green_mesh%msub          !number of subfaults  
          !Arrange model (slip)
@@ -59,14 +53,16 @@
          enddo
        enddo
 
+       ! Perform convolutions in the time domain
        call contime(green_mesh)
 
-
-!IF CONVOLUTIONS ARE PERFORM IN FREQUENCY DOMAIN
+!==================================================!
+!       ATTENTION: UNCOMMENT THE NEXT SECTION
+!  IF CONVOLUTIONS ARE PERFORM IN FREQUENCY DOMAIN
+!==================================================!
 !       !Read tractions in the frequency domain
 !       call read_fft(green_mesh)
 
-!       call cpu_time(start)
 !       k = 1
 !       !write(*,'(a)')'----------100%'
 !       do i=1,green_mesh%msub          !number of subfaults  
@@ -88,24 +84,13 @@
 !         !endif
 !         !This part is not necessary for the forward problem!
 !       enddo
-!       call cpu_time(fini)
-!       !write(*,*)
-!       !print *, 'time for synthetics:', fini-start
-
+!=========================================================!
 
 !*********************************************************
 !      Low-pass Filter the synthetic seismograms if needed
 !      (NOT WORKING YET)
 !      call filter_trac(green_mesh)
 !*********************************************************
-
-!      iunit=15
-!      !Write information about synthetics
-!      OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
-!      write(iunit,*) green_mesh%interp_i
-!      write(iunit,*) green_mesh%nsta, green_mesh%ncomp
-!      close(iunit)
-      print *, 'Finish forwaard' 
 
       end subroutine forward
 

@@ -77,6 +77,12 @@
       ! Timming variables
       real :: start, fini
 
+
+      WRITE(6, *) '================================================='
+      WRITE(6, *) '     3D Kinematic Source Inversion INV3DKIN      '
+      WRITE(6, *) '================================================='
+
+
       ! Set working directories
       ! Directory containing input data files P_C* TUA_C* SIGMA_**_C*
       green_mesh%dat='dat/'
@@ -88,15 +94,17 @@
 
 !=====================================================!
 !=====================================================!
-      ! ONLY FOR GEODG3D OUTPUT FILES
-      ! UNCOMMENT IF YOU WISH TO DO PREPROCESS
+      ! ONLY IF YOU WANT TO PERFORM THE PREPROCESS
+      ! STEPS UNCOMMENT THE NEXT LINE
 
       ! Prepare pseudo Green functions as needed
       !call preprocess(green_mesh)
 !===================================================!
-!===================================================!
-      ! INITIAL STEPS
 
+
+!===================================================!
+!     READ INPUT INFO AND INITIALIZE ARRAYS
+!===================================================!
       ! Read information, time samples, focal info
       ! reciever's geometry, optim. strategy, etc.
       call read_info(green_mesh)
@@ -105,43 +113,64 @@
       ! Estimate slip vector direction
       call coor_trans(green_mesh)
 !==================================================!
-      ! INITAIL FORWARD AND ADJOINT MODELING
 
+
+!===================================================!
+!     INITIALIZE REGULARIZING MATRICES
+!===================================================!
+      IF (green_mesh%msub .EQ. 1) THEN
+
+      ELSE
       ! Initialize model covariance matrix
-!      call exp_covar(green_mesh)
+      call laplacian(green_mesh)
+stop
+      call exp_covar(green_mesh)
 !      call time_corr(green_mesh)
 !      call edge(green_mesh)
+      ENDIF
+!===================================================!
 
-      ! First iteration (slip-rate = vitesse.out*vslip)
-      green_mesh%iter=0
-      write(green_mesh%iter_i,'(I5.5)') green_mesh%iter
-
-      ! Compute the first synthetics associated to 
-      ! initial model (vitesse.out*vslip)
+      ! Read tractions from file (time domain) 
       call read_time(green_mesh)
 
+!===================================================!
+!     FIRST FORWARD AND ADJOINT
+!===================================================!
+      call cpu_time(start)
       call forward(green_mesh)
-
-!      IF (green_mesh%debug .eqv. .true.) THEN
-      ! Write first synthetics to check
-!      call write_debug(green_mesh)
-!      ENDIF
+      call cpu_time(fini)
+      WRITE(6, *) '================================================='
+      WRITE(6,*)  ' Time used for forward: ', fini-start,'seconds'
+      WRITE(6, *) '================================================='
 
       ! Estimate the tractions (adjoint problem) using as 
-      ! forces the velocity residuals at the recievers
-      ! lensynt = dimension of adjoint traction vectors
+      ! forces the residuals
       call initializeadj(green_mesh)
 
+      call cpu_time(start)
       call adjoint(green_mesh)
+      call cpu_time(fini)
+      WRITE(6, *) '================================================='
+      WRITE(6,*)  ' Time used for adjoint: ', fini-start,'seconds'
+      WRITE(6, *) '================================================='
+!===================================================!
 
+
+
+!===================================================!
+!     OPTIMIZATION STRATEGY 
+!===================================================!
       ! Use any optimization strategy to follow the -gradient 
       ! direction to find a model (solution)
       call cpu_time(start)
       call fwi_option(green_mesh,optim)
       call cpu_time(fini)
       print *, 'Time used for inversion: ', fini-start,'seconds'
+!===================================================!
 
-!      call ortogonal(green_mesh)
+      ! Uncomment this line to check orthogonality of
+      ! slip and normal vector2
+      !call ortogonal(green_mesh)
 
       ! Destroy all the memory used
       call destroy_arrays(green_mesh)

@@ -15,8 +15,11 @@
       iunit=20
       ! Read simulation information
 
-      write(6,*) '==============================================='
+      WRITE(6, *) '================================================='
       write(6,*) ' Reading input information '
+      WRITE(6, *) '================================================='
+
+      write(6,*) ' Reading Green s functions '
       open(iunit,file=green_mesh%dat//'simul.info',&
   &        status='old',action='read')
        read(iunit,*) green_mesh%rt, green_mesh%ot
@@ -76,7 +79,9 @@
       read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
       close(iunit)
 
+      WRITE(6, *) '================================================='
       write(6,*) ' Finish reading input information '
-      write(6,*) '==============================================='
+      WRITE(6, *) '================================================='
+
 
       end subroutine read_info

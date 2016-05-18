@@ -69,7 +69,7 @@
        !print *, 'costa', green_mesh%costa, 'cost time', green_mesh%costm
        !green_mesh%costa = green_mesh%costa + green_mesh%lam2*green_mesh%costm
        !green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam2*green_mesh%gradad(:)
-       print *, green_mesh%costa
+       print *, 'Cost: ', green_mesh%costa
 
       ! do i=1,green_mesh%modelsize2
       !   write(81,*) green_mesh%model2(i)

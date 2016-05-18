@@ -46,20 +46,17 @@
          !Compute residuals for all stations and components
         call residual(green_mesh)
 
+         !Flush the array to store total traction
          green_mesh%tottrac(:,:)=0.
 
-         call cpu_time(start)
+         !Perform convolution in the time domain
          call conadjtime(green_mesh)
-         call cpu_time(fini)
-         print *, 'Time for adjoint:', fini-start
-
-         !USED ONLY TO CHECK ADJOINT PROBLEM
-         do i=1,green_mesh%interp_i
-         write(89,*) green_mesh%tottrac(i,1:3)
-         enddo
 
 
-          !ADJOINT PROBLEM IN THE FREQUENCY DOMAIN
+!==================================================!
+!       ATTENTION: UNCOMMENT THE NEXT SECTION
+!  IF CONVOLUTIONS ARE PERFORM IN FREQUENCY DOMAIN
+!==================================================!
 !         green_mesh%tottrac(:,:)=0.
 
 !         call cpu_time(start)
@@ -70,16 +67,7 @@
 !         enddo
 !         call cpu_time(fini)
 !         print *, 'Time for adjoint:', fini-start
-
-        !USED ONLY TO CHECK ADJOINT PROBLEM IN FREQUENCY DOMAIN
-!       do i=1,green_mesh%interp_i
-!       write(88,*) green_mesh%tottrac(i,1:3)
-!       enddo
-
-         !do i=1,green_mesh%lensyn
-         !write(100,*) i,green_mesh%tottrac(i,:)
-         !enddo
-
+!=================================================!
 
 
 
