@@ -1,5 +1,6 @@
       subroutine write_model(green_mesh,model,vecl)
 
+      implicit none
       INCLUDE 'green.h'
 !     optim type strcuture
       TYPE (mesh) :: green_mesh
@@ -30,6 +31,7 @@
          do j=1,green_mesh%ncomp
           do m=1,green_mesh%interp_i
            green_mesh%slipr(m,j) = green_mesh%model(k) !3D coordinates slip-rate
+           write(iunit2,*) green_mesh%model(k)
            k = k + 1
           enddo
          enddo
@@ -38,7 +40,8 @@
          enddo
        enddo
 
-       write(iunit2,*) green_mesh%model(:)
+
+        
        close(iunit2)
        close(iunit)
 
@@ -49,6 +52,7 @@
 
       subroutine read_model(green_mesh)
 
+      implicit none
       INCLUDE 'green.h'
 !     optim type strcuture
       TYPE (mesh) :: green_mesh
@@ -69,4 +73,38 @@
 
 
       end subroutine read_model
+
+
+
+
+      subroutine read_modelpri(green_mesh)
+
+      implicit none
+      INCLUDE 'green.h'
+!     optim type strcuture
+      TYPE (mesh) :: green_mesh
+
+!     Variables needed only here
+      integer :: k, i, j, iunit, m, iunit2
+
+
+       iunit=22
+       OPEN(iunit,FILE=green_mesh%dat//'modelpri.dat',&
+  &         status='old')
+
+       k = 1
+       do i=1,green_mesh%msub     !number of subfaults
+         do j=1,green_mesh%ncomp
+          do m=1,green_mesh%interp_i
+           read(iunit,*) green_mesh%modelp(k)
+           k = k + 1
+          enddo
+         enddo
+       enddo
+
+       close(iunit)
+
+
+      end subroutine read_modelpri
+
 

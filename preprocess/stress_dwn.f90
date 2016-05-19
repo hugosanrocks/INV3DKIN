@@ -65,7 +65,7 @@
           !-------------------------------------------------------------------
           !Parameters needed
           butt%order = 2
-          butt%fc = 4.
+          butt%fc = 1.   !4 before
           nstep = proc_mesh%simsam
           nrec  = proc_mesh%stcomp
           dt    = proc_mesh%simdt

@@ -60,7 +60,7 @@
        ! Bytes used for each element of traction vector (frequency)
        INQUIRE(iolength=bit) green_mesh%tracf(1,1)
        ! Total bytes used for traction matrix (frequency)
-       reclent=bit*green_mesh%ncomp*green_mesh%interp_i*green_mesh%stcomp*green_mesh%msub
+       reclent=bit*green_mesh%ncomp*green_mesh%trac_i*green_mesh%stcomp*green_mesh%msub
 
        iunit=16
        OPEN(iunit,file='dat/TRACT_time.bin',status='unknown',&

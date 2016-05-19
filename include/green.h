@@ -26,7 +26,7 @@
        INTEGER*4 nsta, ncomp, msub, nsubf, lensyn, lensynf        ! Number of: stations, components and subfaults, length of traces
        INTEGER*8 stcomp, sta_i, comp_i, mjump, prog            	  ! Counter on stations, components and staXcomp, jump inside files, prog bar
 
-       INTEGER*8 simsam, slipsam, interp_i, interpadj_i, syn_sam      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
+       INTEGER*8 simsam, slipsam, interp_i, trac_i, interpadj_i, syn_sam      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
        INTEGER*4 delays, iter                              	  ! Number of samples of delay (due to origin time), number of  iteration
        INTEGER*4 modelsize, modelsize2                      	  ! number of samples in the model to optimize
 
@@ -37,7 +37,7 @@
        REAL*4, DIMENSION(:,:), POINTER :: slipr, tracadj, tottrac, tractionvec 
 								  ! Arrays to save current sliprate and gradient
 
-       REAL*4, DIMENSION(:), POINTER :: model,model2, grad, grad2, gradad, rtimes              ! 1D arrays used by TOOLBOX to optmize
+       REAL*4, DIMENSION(:), POINTER :: model,modelp,model2,model2p,grad, grad2, gradad, rtimes              ! 1D arrays used by TOOLBOX to optmize
        REAL*4, DIMENSION(:,:), POINTER :: slipr2, tracad                       ! 1D arrays used by TOOLBOX to optmize
        INTEGER*4, DIMENSION(:), POINTER :: rsamp                               ! rupture sample time
 
@@ -49,7 +49,37 @@
        LOGICAL debug         
 
 
-       REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce, ct                  ! Arrays to covariance matrices
+       REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce, ct, la                  ! Arrays to covariance matrices
        INTEGER weig
+       REAL*4, DIMENSION(:),POINTER :: tseries                    ! Subfault's positions (x,y,z)
 
        END TYPE mesh
+
+!---------------------
+! Butterworth filter
+!---------------------
+TYPE butter
+
+SEQUENCE
+
+   ! Order of the butterworth filter
+   INTEGER order
+
+   ! Cutoff frequency
+   REAL fc
+
+   ! Filter coefficients
+   REAL C(5,10)
+
+   ! Coefficients defining the filter memory
+   REAL D(2,10)
+
+   ! Group delay in seconds
+   REAL Tg
+
+   ! Number of required 2nd order sections
+   INTEGER NSections
+
+
+END TYPE butter
+

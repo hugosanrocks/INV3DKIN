@@ -12,15 +12,12 @@
         integer hyp
 
 
-        laplace(:,:) = 1.
+        green_mesh%la(:,:) = 0.
 
         !Five point laplacian operator [0 1 0;1 -4 1;0 1 0]
         do i=1,green_mesh%msub
-          laplace(i,i) = -4.
+          green_mesh%la(i,i) = 4.
         enddo
-
-        do i=1,5
-         print *, laplace(i,1:5)
-        enddo
+        
 
         endsubroutine laplacian

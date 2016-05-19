@@ -22,7 +22,7 @@ FFLAGS2   = -openmp
 
 #first : test_Connect1D
 
-COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o time_corr.o covedge.o modeledge.o timemask.o modeltime.o covtime.o covtimer.o modeltimer.o laplacian.o
+COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o time_corr.o covedge.o modeledge.o timemask.o modeltime.o covtime.o covtimer.o modeltimer.o laplacian.o covtiko.o modeltiko.o modelpri.o covpri.o
 
 FILTER_OBJ  =  init_butterworth.o filtfilt_butterworth.o
 

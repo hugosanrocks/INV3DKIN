@@ -26,7 +26,7 @@
        read(iunit,*) green_mesh%nsta, green_mesh%ncomp, green_mesh%msub
        read(iunit,*) green_mesh%simsam, green_mesh%simt, green_mesh%simdt
        read(iunit,*) green_mesh%stress_opt
-       read(iunit,*) green_mesh%interp_i
+       read(iunit,*) green_mesh%interp_i, green_mesh%trac_i
        read(iunit,*) green_mesh%prog
       close(iunit)
 

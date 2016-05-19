@@ -62,6 +62,9 @@
       write(*,*) 'Wrong forward option, check dat/syn.info'
       endif
 
+      !Read Green's functions
+      call read_time(green_mesh)
+
       !Compute the forward problem and compute first synthetics
       !asociated with the first model (0 ZEROS)
       !lensyn = dimension of synthetic vectors
@@ -90,6 +93,10 @@
       deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm)
       deallocate(green_mesh%ce,green_mesh%ct,green_mesh%rtimes)
       deallocate(green_mesh%diag)
+      deallocate(green_mesh%la)
+      deallocate(green_mesh%modelp)
+      deallocate(green_mesh%model2p)
+      deallocate(green_mesh%tseries)
 
       !Frequency domain
 !      deallocate(green_mesh%tracf,green_mesh%slipf)

@@ -114,17 +114,18 @@
       call coor_trans(green_mesh)
 !==================================================!
 
-
-!===================================================!
+call initializeadj(green_mesh)
+!=============================================!
 !     INITIALIZE REGULARIZING MATRICES
 !===================================================!
       IF (green_mesh%msub .EQ. 1) THEN
 
       ELSE
-      ! Initialize model covariance matrix
-      call laplacian(green_mesh)
-stop
-      call exp_covar(green_mesh)
+      ! Initialize model regularizing terms
+!      call model_pri(green_mesh)
+!      print *, green_mesh%costm, 'costm'
+!      call laplacian(green_mesh)
+!      call exp_covar(green_mesh)
 !      call time_corr(green_mesh)
 !      call edge(green_mesh)
       ENDIF
@@ -145,7 +146,7 @@ stop
 
       ! Estimate the tractions (adjoint problem) using as 
       ! forces the residuals
-      call initializeadj(green_mesh)
+      !call initializeadj(green_mesh)
 
       call cpu_time(start)
       call adjoint(green_mesh)
@@ -155,7 +156,8 @@ stop
       WRITE(6, *) '================================================='
 !===================================================!
 
-
+       green_mesh%costa = green_mesh%costa + &
+  &    green_mesh%lam1*green_mesh%costm
 
 !===================================================!
 !     OPTIMIZATION STRATEGY 

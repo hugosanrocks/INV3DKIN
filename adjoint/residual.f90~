@@ -82,33 +82,39 @@
           read(iunit,*) green_mesh%obs(1:green_mesh%interp_i,p)
        !  enddo
          close(iunit)
-        p=p+1
-        enddo !loop over 3 components
-       enddo  !loop over number of stations
-
-       do ii=1,green_mesh%stcomp
           !-------------------------------------------------------------------
           !OPTIONAL FILTER APPLIED TO GREEN'S FUNCTIONS
-          butt%order = 2
-          butt%fc = 1.
-          nstep = green_mesh%interp_i
-          nrec  = green_mesh%stcomp
-          dt    = green_mesh%slipdt
           !-------------------------------------------------------------------
           !Parameters needed
+          butt%order = 2
+          butt%fc = 1.
+          nstep = green_mesh%simsam
+          nrec  = green_mesh%stcomp
+          dt    = green_mesh%simdt
           !Asign the time series to be filtered
-          green_mesh%tseries(:) = green_mesh%obs(:,ii)
+          green_mesh%tseries(:) = green_mesh%obs(:,p)
           !Initialize the butterworth filter
           CALL INIT_BUTTERWORTH(butt, dt)
           ! Apply the butterworth filter
           CALL FILTFILT_BUTTERWORTH(green_mesh%tseries, butt, nstep)
-          !copy_tseries(:,2) = tseries(:)
-          green_mesh%obs(:,ii) = green_mesh%tseries(:)
+!          copy_tseries(:,2) = tseries(:)
+          green_mesh%obs(:,p) = green_mesh%tseries(:)
           ! Print the resultsprint input and filtered signals to output file
           !-----------------------------------------------------------------
           ! END OF OPTIONAL FILTER APPLIED TO GREEN'S FUNCTIONS
           !-----------------------------------------------------------------
+        p=p+1
+        enddo !loop over 3 components
+       enddo  !loop over number of stations
+
+
+      do ii=1,875
+      write(121) green_mesh%obs(ii,1)
       enddo
+stop
+
+
+
 
 
        call weight_cov(green_mesh)

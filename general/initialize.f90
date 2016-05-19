@@ -88,7 +88,7 @@
       allocate(green_mesh%slip(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
 
       !8 tractionvec = matrix containing all traction vectors for only 1 subfault
-      allocate(green_mesh%tractionvec(green_mesh%interp_i,&
+      allocate(green_mesh%tractionvec(green_mesh%trac_i,&
   &            green_mesh%nsta*green_mesh%ncomp*green_mesh%ncomp*green_mesh%msub))
 
       !Forward variables
@@ -133,6 +133,15 @@
       allocate(green_mesh%rsamp(green_mesh%msub))
       !19
       allocate(green_mesh%diag(288*875))
+      !20
+      allocate(green_mesh%la(green_mesh%msub,green_mesh%msub))
+      !21
+      allocate(green_mesh%modelp(green_mesh%modelsize))
+      !22
+      allocate(green_mesh%model2p(green_mesh%modelsize2))
+      !23
+      allocate(green_mesh%tseries(green_mesh%interp_i))
+
 
       end subroutine initialize
 
@@ -207,12 +216,16 @@
       deallocate(green_mesh%rtimes)      !17
       deallocate(green_mesh%rsamp)       !18
       deallocate(green_mesh%diag)        !19
+      deallocate(green_mesh%la)
+      deallocate(green_mesh%modelp)
+      deallocate(green_mesh%model2p)
+      deallocate(green_mesh%tseries)
 
       !From initialadj
       deallocate(green_mesh%cost)
       deallocate(green_mesh%res)
       deallocate(green_mesh%tottrac)
-
+      
       !Frequency domain arrays
 !      deallocate(green_mesh%resif)
 !      deallocate(green_mesh%tracad)

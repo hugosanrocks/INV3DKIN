@@ -30,6 +30,11 @@
 
          call read_grad(green_mesh)
 
+!
+!       green_mesh%grad2(:) = green_mesh%grad2(:) + &
+!  &    green_mesh%lam1*green_mesh%gradad(:)
+
+
          grad_preco(:) = green_mesh%grad2(:)
 
 !#########################################################
@@ -40,9 +45,6 @@
   !----------------------------------------------------
   !call model_check(green_mesh)
 
-  do i=1,green_mesh%modelsize2
-    write(77,*) green_mesh%model(i), green_mesh%grad2(i)
-  enddo
 !
    do while ((FLAG.ne.'CONV').and.(FLAG.ne.'FAIL'))
      call PLBFGS(n,green_mesh%model2,green_mesh%costa,green_mesh%grad2,grad_preco,optim,FLAG)
