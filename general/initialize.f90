@@ -95,7 +95,7 @@
       !lensyn = dimension of synthetic vectors
       !lensynf = dimension of synthetics in frequency
       !stcomp = total number of synthetics
-      green_mesh%lensyn=green_mesh%interp_i+green_mesh%interp_i-1
+      green_mesh%lensyn=green_mesh%interp_i+green_mesh%trac_i-1
       green_mesh%stcomp=green_mesh%nsta*green_mesh%ncomp
 
 !=====TERMS USED IF CONVOLUTION PERFORMED IN THE FREQUENCY DOMAIN============!

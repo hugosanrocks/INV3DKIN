@@ -90,7 +90,7 @@
 
       scalfac=green_mesh%moment/(green_mesh%msub)
 
-      allocate(x(green_mesh%interp_i),y(green_mesh%interp_i),z(green_mesh%lensyn))
+      allocate(x(green_mesh%interp_i),y(green_mesh%trac_i),z(green_mesh%lensyn))
 
       cont = 0
        do i=1,green_mesh%msub
@@ -107,7 +107,7 @@
           x(:) = green_mesh%slip(:,ii)  !ii = ii
           y(:) = green_mesh%tractionvec(:,kk) !cont = kk   jj= mm
 !         !Convolve slip rate model with the Green functions
-          call conv(x,green_mesh%interp_i,y,green_mesh%interp_i,&
+          call conv(x,green_mesh%interp_i,y,green_mesh%trac_i,&
   &                z,green_mesh%lensyn)
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
