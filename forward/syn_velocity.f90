@@ -54,7 +54,7 @@
        INCLUDE 'green.h'
        TYPE (mesh) :: green_mesh
 
-       integer bit, iunit, i
+       integer bit, iunit, i,j,k,l
        integer*8 reclent
 
        ! Bytes used for each element of traction vector (frequency)
@@ -67,9 +67,6 @@
  &          form='unformatted',ACCESS='DIRECT',recl=reclent)
          read(iunit,rec=1) green_mesh%tractionvec(:,:)
          !read(iunit,rec=green_mesh%tfft_i) green_mesh%tracf(:,:)
-         !do i=1,green_mesh%lensynf
-         !   write(15,*) green_mesh%tracf(i,1)
-         !enddo
        close(iunit)
 
       end subroutine read_time

@@ -1,4 +1,15 @@
+
+HOST=$(shell hostname)
+
+#matches hugo-PC
+ifeq ($(findstring hugo,$(HOST)), hugo)
 include ../install/make.hugo-PC.inc
+endif
+
+ifeq ($(findstring pohualli,$(HOST)), pohualli)
+include ../install/make.pohualli.inc
+endif
+
 #
 
 all : FWI_INV3DKIN FORWARD PREPROC_GEODG

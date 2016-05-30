@@ -123,9 +123,9 @@
 
        !USED ONLY TO CHECK WRITING AND READING
        !if ((proc_mesh%sta_i .eq. 3) .and. (proc_mesh%comp_i .eq. 2)) then
-       !do i=1,proc_mesh%interp_i
-       ! write(122,*) tracvec(:,i)
-       !enddo
+       do i=1,proc_mesh%interp_i
+        write(122,*) tracvec(:,i)
+       enddo
        !endif
 
        !do i=1,proc_mesh%interp_i
