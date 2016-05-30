@@ -26,7 +26,7 @@
        INTEGER*4 nsta, ncomp, msub, nsubf, lensyn, lensynf        ! Number of: stations, components and subfaults, length of traces
        INTEGER*8 stcomp, sta_i, comp_i, mjump, prog            	  ! Counter on stations, components and staXcomp, jump inside files, prog bar
 
-       INTEGER*8 simsam, slipsam, interp_i, trac_i, interpadj_i, syn_sam      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
+       INTEGER*8 simsam, slipsam, interp_i, trac_i, syn_i, interpadj_i, syn_sam      	  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
        INTEGER*4 delays, iter                              	  ! Number of samples of delay (due to origin time), number of  iteration
        INTEGER*4 modelsize, modelsize2                      	  ! number of samples in the model to optimize
 

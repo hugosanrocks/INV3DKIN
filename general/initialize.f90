@@ -132,7 +132,7 @@
       !18
       allocate(green_mesh%rsamp(green_mesh%msub))
       !19
-      allocate(green_mesh%diag(288*875))
+      allocate(green_mesh%diag(green_mesh%msub*green_mesh%interp_i))
       !20
       allocate(green_mesh%la(green_mesh%msub,green_mesh%msub))
       !21

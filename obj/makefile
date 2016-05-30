@@ -37,7 +37,7 @@ COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o time_corr.o 
 
 FILTER_OBJ  =  init_butterworth.o filtfilt_butterworth.o
 
-#matrix.o not used now
+CAUSAL_OBJ  =  synwindow.o
 
 GENERAL_OBJ = orderinv.o linreg.o conv.o ortogonal.o rotate.o modeldecomp.o inv_mat.o
 
@@ -55,7 +55,7 @@ ADJOINT_OBJ = adjoint.o residual.o write_residual.o adjtraction.o read_traction.
 
 MODEL_GRAD_OBJ = writemodel.o newgrad.o readgrad.o
 
-ALL_OBJ = $(INIT_OBJ) $(PREPROC_OBJ) $(GENERAL_OBJ) $(OPTIM_OBJ) $(MAIN_OBJ) $(FORWARD_OBJ) $(MODEL_GRAD_OBJ) $(ADJOINT_OBJ) $(COV_OBJ) $(FILTER_OBJ)
+ALL_OBJ = $(INIT_OBJ) $(PREPROC_OBJ) $(GENERAL_OBJ) $(OPTIM_OBJ) $(MAIN_OBJ) $(FORWARD_OBJ) $(MODEL_GRAD_OBJ) $(ADJOINT_OBJ) $(COV_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ)
 
 FOR_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) mainforward.o writemodel.o $(INIT_OBJ) $(FORWARD_OBJ) $(GENERAL_OBJ)
 

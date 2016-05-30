@@ -3,7 +3,7 @@
 #
 
 # Library variables
-LTOOLS_BOX = ../../TOOLS_BOX
+LTOOLS_BOX = ../../TOOLS_BOX/trunk
 
 ##OPTIMIZATION LIBRARIES
 LPSTD = $(LTOOLS_BOX)/OPTIMIZATION/lib -lPSTD
