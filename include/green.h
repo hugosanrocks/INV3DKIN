@@ -41,6 +41,9 @@
        REAL*4, DIMENSION(:,:), POINTER :: slipr2, tracad                       ! 1D arrays used by TOOLBOX to optmize
        INTEGER*4, DIMENSION(:), POINTER :: rsamp                               ! rupture sample time
 
+       INTEGER*4, DIMENSION(:,:), POINTER :: samwin                            ! samples of time window
+
+
        !DOUBLE COMPLEX, DIMENSION (:,:), POINTER :: tracf, slipf  ! Arrays for fft conversion (slip and traction)
        COMPLEX, DIMENSION (:,:), POINTER :: tracf, slipf, resif
        INTEGER tfft_i                                             ! Counter used by fftw3

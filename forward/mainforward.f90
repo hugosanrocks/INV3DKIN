@@ -97,6 +97,7 @@
       deallocate(green_mesh%modelp)
       deallocate(green_mesh%model2p)
       deallocate(green_mesh%tseries)
+      deallocate(green_mesh%samwin)
 
       !Frequency domain
 !      deallocate(green_mesh%tracf,green_mesh%slipf)

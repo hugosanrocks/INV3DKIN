@@ -89,14 +89,16 @@
        TYPE (mesh) :: green_mesh
        ! FFT Library
 
-      integer i, j, k, ii, jj, kk, mm, cont, m, p
+      integer i, j, k, ii, jj, kk, mm, cont, m, p, lenconv
       real scalfac
       real, dimension(:), allocatable :: x, y, z
       real, dimension(:,:), allocatable :: tottrac
 
       scalfac=green_mesh%moment/(green_mesh%msub)
 
-      allocate(x(green_mesh%interp_i),y(green_mesh%interp_i),z(green_mesh%lensyn))
+
+      lenconv = green_mesh%trac_i + green_mesh%interp_i - 1
+      allocate(x(green_mesh%interp_i),y(green_mesh%trac_i),z(lenconv))
       allocate(tottrac(green_mesh%interp_i,green_mesh%msub*green_mesh%ncomp))
 
       tottrac(:,:) = 0.
@@ -115,8 +117,8 @@
           x(:) = green_mesh%res(:,ii) 
           y(:) = green_mesh%tractionvec(:,cont) 
 !         !Convolve slip rate model with the Green functions
-          call conv(x,green_mesh%interp_i,y,green_mesh%interp_i,&
-  &                z,green_mesh%lensyn)
+          call conv(x,green_mesh%interp_i,y,green_mesh%trac_i,&
+  &                z,lenconv)
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
 !          do p=1,green_mesh%interp_i

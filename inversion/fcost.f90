@@ -31,7 +31,6 @@
         do j=1,lx
          do k=1,ly
           cost(i,j)=cost(i,j)+ y(k,j)*y(k,i)
-          print *, cost(i,j)
          enddo
         enddo
       enddo

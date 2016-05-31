@@ -40,18 +40,23 @@
       real start, fini
 
 
-         !read observed seismograms at stations
+         !Read observed seismograms at stations
          call read_obs(green_mesh)
- 
+print *, 'obs'
+         !Assuming a REALTIME picking (STALTA) detect time window for inversion
+         !======Now it only reads from a file==================================
+         !call windows(green_mesh)
+
          !Compute residuals for all stations and components
         call residual(green_mesh)
+print *, 'res'
 
          !Flush the array to store total traction
          green_mesh%tottrac(:,:)=0.
 
          !Perform convolution in the time domain
          call conadjtime(green_mesh)
-
+print *, 'tac'
 
 !==================================================!
 !       ATTENTION: UNCOMMENT THE NEXT SECTION

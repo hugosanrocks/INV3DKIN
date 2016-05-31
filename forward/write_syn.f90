@@ -33,7 +33,7 @@
       iunit=12
 
       start= 1!green_mesh%delays+1
-      fini = green_mesh%interp_i!green_mesh%delays+green_mesh%interp_i
+      fini = green_mesh%syn_i   !interp_i = syn_i    changed    green_mesh%delays+green_mesh%interp_i
 
       k=1
       do ii=1,green_mesh%nsta

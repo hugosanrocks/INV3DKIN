@@ -37,9 +37,6 @@
       
       green_mesh%res(:,:) = green_mesh%syn(:,:) - green_mesh%obs(:,:)
 
-      call windows(green_mesh)
-
-      
       !Multiply by data covariance matrix (Weighting factors)
       call prod_res(green_mesh)
       
@@ -79,10 +76,10 @@
          write(green_mesh%sta,'(I3.3)') ii
          write(green_mesh%comp,'(I1.1)') jj
          !Unit to read observations
-         OPEN(iunit,FILE=green_mesh%dat//'obs_S'//green_mesh%sta//'_C'//green_mesh%comp//'',&
+         OPEN(iunit,FILE=green_mesh%dat//'obs_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
     &    status='unknown')
        !  do k=1,green_mesh%interp_i
-          read(iunit,*) green_mesh%obs(1:green_mesh%interp_i,p)
+          read(iunit,*) green_mesh%obs(1:green_mesh%interp_i,p)    !syn_i = interp_i
        !  enddo
          close(iunit)
         p=p+1
@@ -258,6 +255,8 @@
         enddo
        enddo
        green_mesh%res(:,:) = matr(:,:)
+
+
       !All recordings with weight = 1
       elseif (green_mesh%weig .eq. 1) then 
        m3 = 0.

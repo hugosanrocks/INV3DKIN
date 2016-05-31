@@ -74,7 +74,7 @@
          !Read the slip-rate initial model (modulus of vector)
          iunit=30
          open(iunit,file=green_mesh%dat//'vitesse.out',status='unknown',action='read')
-         do i=1,green_mesh%slipsam
+         do i=1,green_mesh%interp_i      !slipsam = interp_i
           read(iunit,*) green_mesh%slipmod(i,:)
          enddo
          close(iunit)
@@ -95,7 +95,6 @@
         !Change slip vector model from along stk and dip to (x,y,z)
         call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
         
-
 
          endsubroutine coor_trans
 

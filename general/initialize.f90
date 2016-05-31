@@ -72,10 +72,13 @@
       !1 Coordinate transformation (strike,dip,rake) to (x,y,z)
       allocate(green_mesh%fault(green_mesh%msub,3))
       !2 slipmod = matrix containing slip module for each subfualt
-      allocate(green_mesh%slipmod(green_mesh%slipsam,green_mesh%msub))
+      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
+      !interp_i = simsam    changed
+
       !1D vectors used for optimization toolbox
       green_mesh%modelsize=green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
-      green_mesh%modelsize2=green_mesh%interp_i*2*green_mesh%msub
+      green_mesh%modelsize2=green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
+
       !3 4 5
       allocate(green_mesh%model(green_mesh%modelsize))
       allocate(green_mesh%model2(green_mesh%modelsize2))
@@ -109,7 +112,9 @@
 !============================================================================!
 
       !9
-      allocate(green_mesh%syn(green_mesh%interp_i,green_mesh%stcomp))   !interp_i = syn_sam
+      allocate(green_mesh%syn(green_mesh%syn_i,green_mesh%stcomp))   !interp_i = syn_sam
+      !interp_i = syn_i          changed
+
       !10
       allocate(green_mesh%gradad(green_mesh%modelsize2))
       !allocate(green_mesh%tracad(green_mesh%lensyn, green_mesh%msub*2))
@@ -118,7 +123,9 @@
 
       !syn = matrix to store observed seismograms at receivers (time)
       !12
-      allocate(green_mesh%obs(green_mesh%interp_i,green_mesh%stcomp))
+      allocate(green_mesh%obs(green_mesh%syn_i,green_mesh%stcomp))
+      !interp_i = syn_i          changed
+
       !13
       allocate(green_mesh%cd(green_mesh%stcomp,green_mesh%stcomp))
       !14
@@ -140,8 +147,11 @@
       !22
       allocate(green_mesh%model2p(green_mesh%modelsize2))
       !23
-      allocate(green_mesh%tseries(green_mesh%interp_i))
+      allocate(green_mesh%tseries(green_mesh%syn_i))
+      !interp_i = syn_i           filter the observations
 
+      !24
+      allocate(green_mesh%samwin(green_mesh%stcomp,2))
 
       end subroutine initialize
 
@@ -220,6 +230,7 @@
       deallocate(green_mesh%modelp)
       deallocate(green_mesh%model2p)
       deallocate(green_mesh%tseries)
+      deallocate(green_mesh%samwin)
 
       !From initialadj
       deallocate(green_mesh%cost)
