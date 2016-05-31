@@ -6,9 +6,13 @@
         TYPE (mesh) :: green_mesh
 
         integer i, j, k, iunit
-        real dist(green_mesh%msub,green_mesh%msub)
-        real lambda, lambda0, sigmam, factor
+        real dist(green_mesh%msub,green_mesh%msub), disthyp(green_mesh%msub)
+        real lambda, lambda0, sigmam, factor, hypo(1,3)
         integer hyp
+
+        hypo(1,1) = 58.000
+        hypo(1,2) = 42.040
+        hypo(1,3) = 13.617
 
         !SAME AS Mathilde Radiguet THESIS EQ (3.3) 
         !Controling parameters of covariance matrix
@@ -47,6 +51,14 @@
         enddo
        enddo
 
+
+       do i=1,green_mesh%msub
+         disthyp(i) = sqrt( (hypo(1,1)-green_mesh%fault(i,1))**2 +&
+  &                (hypo(1,2)-green_mesh%fault(i,2))**2 +&
+  &                (hypo(1,3)-green_mesh%fault(i,3))**2  )*1000.
+       enddo
+
+
        green_mesh%la(:,:) = green_mesh%la(:,:) / 1500.**2
         do i=1,288
          do j=1,288
@@ -54,22 +66,23 @@
          enddo
         enddo
 
-
+!commented 31 may
        !Used only to check values of distance and covariance
-       k=1
-       do i=1,green_mesh%msub
-        do j=1,green_mesh%msub
-       !  write(88,*) dist(i,:)
-         write(999,*) green_mesh%cm(i,j)
-       !  k=k+1
-        enddo
-        enddo
+!       k=1
+!       do i=1,green_mesh%msub
+!        do j=1,green_mesh%msub
+!       !  write(88,*) dist(i,:)
+!         write(999,*) green_mesh%cm(i,j)
+!       !  k=k+1
+!        enddo
+!        enddo
 
-       open(111,file='dat/corr.dat',status='unknown')
-       do i=1,green_mesh%msub
-        read(111,*) green_mesh%cm(i,:)
-       enddo
-       close(111)
+!commented 31 may
+!       open(111,file='dat/corr.dat',status='unknown')
+!       do i=1,green_mesh%msub
+!        read(111,*) green_mesh%cm(i,:)
+!       enddo
+!       close(111)
 
 
 
@@ -77,7 +90,7 @@
        !TO BE CHANGED FOR VARIABLE VS VELOCITY
        green_mesh%rtimes(:) = dist(hyp,:) / 4620. !4620 MAX velo siv1
        do i=1,green_mesh%msub
-       green_mesh%rsamp(i) = floor( (dist(hyp,i) / 4620. ) / green_mesh%slipdt )
+       green_mesh%rsamp(i) = floor( (disthyp(i) / 4620. ) / green_mesh%slipdt )  !dist(hyp,i) = disthypo(i)
        write(31,*) green_mesh%rsamp(i)
        enddo
        

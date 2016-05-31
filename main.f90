@@ -125,7 +125,7 @@ call initializeadj(green_mesh)
 !      call model_pri(green_mesh)
 !      print *, green_mesh%costm, 'costm'
 !      call laplacian(green_mesh)
-!      call exp_covar(green_mesh)
+      call exp_covar(green_mesh)
 !      call time_corr(green_mesh)
 !      call edge(green_mesh)
       ENDIF

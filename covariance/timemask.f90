@@ -15,10 +15,11 @@
        tsam = green_mesh%slipsam
        sub = green_mesh%msub
        lambda = 0.1
-       nuc(1)=210
-       nuc(2)=211
-       nuc(3)=186
-       nuc(4)=187
+!may 31
+       !nuc(1)=210
+       !nuc(2)=211
+       !nuc(3)=186
+       !nuc(4)=187
 
        allocate(matrix(sub,sub),t(tsam),f(tsam,sub))
 
@@ -37,22 +38,23 @@
          f(i,j) = exp(-1. * (t(i) - t(ind(j))) / lambda )  !0.1 bueno !4 malo
         enddo
        enddo
-       f(:,210) = 1.
-       f(:,211) = 1.
-       f(:,186) = 1.
-       f(:,187) = 1.
-       ind(210) = 0
-       ind(211) = 0
-       ind(186) = 0
-       ind(187) = 0
-       do j=1,4
-        do i=1,tsam
-         f(i,nuc(j)) = exp(-1. * (t(i) - t(ind(nuc(j)))) / 0.04 )  !0.1 bueno !4 malo
-        enddo
-       enddo
-       do i=1,875
-        write(875,*) f(i,186)
-       enddo
+       !f(:,210) = 1.
+       !f(:,211) = 1.
+       !f(:,186) = 1.
+       !f(:,187) = 1.
+       !ind(210) = 0
+       !ind(211) = 0
+       !ind(186) = 0
+       !ind(187) = 0
+
+!       do j=1,4
+!        do i=1,tsam
+!         f(i,nuc(j)) = exp(-1. * (t(i) - t(ind(nuc(j)))) / 0.04 )  !0.1 bueno !4 malo
+!        enddo
+!       enddo
+!       do i=1,875
+!        write(875,*) f(i,186)
+!       enddo
 
        open(iunit,file=green_mesh%dat//'timemask.dat',status='unknown',&
   &         form='unformatted',access='direct',action='write',recl=sub*sub)

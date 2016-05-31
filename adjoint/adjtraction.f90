@@ -89,17 +89,17 @@
        TYPE (mesh) :: green_mesh
        ! FFT Library
 
-      integer i, j, k, ii, jj, kk, mm, cont, m, p, lenconv
+      integer i, j, k, ii, jj, kk, mm, cont, m, p, lenconv, pr
       real scalfac
       real, dimension(:), allocatable :: x, y, z
       real, dimension(:,:), allocatable :: tottrac
 
       scalfac=green_mesh%moment/(green_mesh%msub)
+      print *, green_mesh%delays, 'delay'
 
-
-      lenconv = green_mesh%trac_i + green_mesh%interp_i - 1
-      allocate(x(green_mesh%interp_i),y(green_mesh%trac_i),z(lenconv))
-      allocate(tottrac(green_mesh%interp_i,green_mesh%msub*green_mesh%ncomp))
+      lenconv = green_mesh%trac_i + green_mesh%syn_i - 1        !syn_i = interp_i
+      allocate(x(green_mesh%syn_i),y(green_mesh%trac_i),z(lenconv))     !syn_i = interp_i
+      allocate(tottrac(green_mesh%syn_i,green_mesh%msub*green_mesh%ncomp))
 
       tottrac(:,:) = 0.
 
@@ -117,7 +117,7 @@
           x(:) = green_mesh%res(:,ii) 
           y(:) = green_mesh%tractionvec(:,cont) 
 !         !Convolve slip rate model with the Green functions
-          call conv(x,green_mesh%interp_i,y,green_mesh%trac_i,&
+          call conv(x,green_mesh%syn_i,y,green_mesh%trac_i,&      !syn_i = interp_i
   &                z,lenconv)
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
@@ -125,19 +125,27 @@
 !           write(15,*) z(green_mesh%delays+p)
 !          enddo
 !         !Stack the three convolutions X, Y, Z
-         tottrac(:,mm)= tottrac(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%interp_i)
+         !do pr=1,lenconv
+         !  write(111,*) z(pr)
+         !enddo
+         tottrac(:,mm)= tottrac(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%syn_i)
+         !do pr=1,green_mesh%syn_i
+         !  write(222,*) tottrac(pr,1)
+         !enddo
          cont = cont + 1
          enddo     !Loop over 3 traction components
         enddo
        enddo
       enddo
 
-      k = green_mesh%interp_i
+      k = green_mesh%syn_i
       do i=1,green_mesh%interp_i
        green_mesh%tottrac(i,:) = tottrac(k,:)
        k = k - 1
       enddo
-
+         !do pr=1,green_mesh%interp_i
+         !  write(333,*) green_mesh%tottrac(pr,1)
+         !enddo
 
       deallocate(x,y,z)
       deallocate(tottrac)

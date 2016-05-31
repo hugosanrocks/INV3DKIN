@@ -39,12 +39,12 @@
 
       !Multiply by data covariance matrix (Weighting factors)
       call prod_res(green_mesh)
-      
+
       !Time reverse for adjoint force
-      call order_inv(green_mesh%res,green_mesh%interp_i,green_mesh%stcomp)
-      
+      call order_inv(green_mesh%res,green_mesh%syn_i,green_mesh%stcomp)   !syn_i = interp_i
+
       !Print only if you want to check
-      !call write_residual(green_mesh)
+      call write_residual(green_mesh)
 
       !Transform residuals to Frequency domain
       !turn off this if convolutions are done in tme
@@ -64,7 +64,7 @@
       TYPE (mesh) :: green_mesh
       TYPE (butter) :: butt
 
-      integer ii, jj, k, iunit, p
+      integer ii, jj, k, iunit, p, optf
       integer nrec, nstep
       real dt
 
@@ -76,22 +76,25 @@
          write(green_mesh%sta,'(I3.3)') ii
          write(green_mesh%comp,'(I1.1)') jj
          !Unit to read observations
-         OPEN(iunit,FILE=green_mesh%dat//'obs_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
+         OPEN(iunit,FILE=green_mesh%dat//'obs_S'//green_mesh%sta//'_C'//green_mesh%comp,&
     &    status='unknown')
-       !  do k=1,green_mesh%interp_i
-          read(iunit,*) green_mesh%obs(1:green_mesh%interp_i,p)    !syn_i = interp_i
-       !  enddo
+         do k=1,green_mesh%syn_i
+          read(iunit,*) green_mesh%obs(k,p)    !syn_i = interp_i
+         enddo
          close(iunit)
         p=p+1
         enddo !loop over 3 components
        enddo  !loop over number of stations
+
+       optf = 2
+       if (optf .eq. 1) then
 
        do ii=1,green_mesh%stcomp
           !-------------------------------------------------------------------
           !OPTIONAL FILTER APPLIED TO GREEN'S FUNCTIONS
           butt%order = 2
           butt%fc = 1.
-          nstep = green_mesh%interp_i
+          nstep = green_mesh%syn_i
           nrec  = green_mesh%stcomp
           dt    = green_mesh%slipdt
           !-------------------------------------------------------------------
@@ -109,7 +112,9 @@
           ! END OF OPTIONAL FILTER APPLIED TO GREEN'S FUNCTIONS
           !-----------------------------------------------------------------
       enddo
-
+      else
+       print *, ' Observation not filtered'
+      endif
 
        call weight_cov(green_mesh)
 
@@ -219,7 +224,7 @@
 
       integer i,j,k
       real m1(green_mesh%stcomp), m2(green_mesh%stcomp), m3
-      real matr(green_mesh%interp_i,green_mesh%stcomp), m4(green_mesh%stcomp)
+      real matr(green_mesh%syn_i,green_mesh%stcomp), m4(green_mesh%stcomp)
 
       !Value of misfit (cost)
       m3=0.
@@ -227,7 +232,7 @@
 
       !All recordings with weight from file (Cd matrix)
       if (green_mesh%weig .eq. 2) then
-       do k=1,green_mesh%interp_i
+       do k=1,green_mesh%syn_i           !syn_i = interp_i
         m1(:) = 0.
         !res' * cd'
         do i=1,green_mesh%stcomp
@@ -260,7 +265,7 @@
       !All recordings with weight = 1
       elseif (green_mesh%weig .eq. 1) then 
        m3 = 0.
-       call fcost(green_mesh%res,green_mesh%stcomp,green_mesh%interp_i,m3)
+       call fcost(green_mesh%res,green_mesh%stcomp,green_mesh%syn_i,m3)
        !print *, 'm3', m3
       else 
        print *, 'Wrong weighting value: Check dat/weights.info'
