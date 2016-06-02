@@ -43,7 +43,7 @@
         !Write synthetic seismogram ASCII file (used to check)
         open(iunit,file=green_mesh%out//'syn_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
     &   status='unknown')
-        do j=start,fini
+        do j=start,green_mesh%samwin(ii,2)
          write(iunit,*) green_mesh%syn(j,k)
         enddo
        close(iunit) !Close writing units

@@ -43,10 +43,6 @@
          !Read observed seismograms at stations
          call read_obs(green_mesh)
 
-         !Assuming a REALTIME picking (STALTA) detect time window for inversion
-         !======Now it only reads from a file==================================
-         !call windows(green_mesh)
-
          !Compute residuals for all stations and components
         call residual(green_mesh)
 

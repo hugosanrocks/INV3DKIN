@@ -90,21 +90,24 @@
        ! FFT Library
 
       integer i, j, k, ii, jj, kk, mm, cont, m, p, lenconv, pr
+      integer sample
       real scalfac
-      real, dimension(:), allocatable :: x, y, z
+      real, dimension(:), allocatable :: x, y, z, aux
       real, dimension(:,:), allocatable :: tottrac
 
       scalfac=green_mesh%moment/(green_mesh%msub)
 
-      lenconv = green_mesh%trac_i + green_mesh%syn_i - 1        !syn_i = interp_i
-      allocate(x(green_mesh%syn_i),y(green_mesh%trac_i),z(lenconv))     !syn_i = interp_i
-      allocate(tottrac(green_mesh%syn_i,green_mesh%msub*green_mesh%ncomp))
+      allocate(y(green_mesh%trac_i))     !syn_i = interp_i
+      allocate(tottrac(green_mesh%lenobs,green_mesh%msub*green_mesh%ncomp))        !syn_i =  lenobs
 
       tottrac(:,:) = 0.
 
       cont = 1
        do i=1,green_mesh%msub
         do j=1,green_mesh%nsta
+         sample = green_mesh%samwin(j,2)
+        lenconv = green_mesh%trac_i + sample - 1   !syn_i = interp_i     sample = syn_i
+         allocate(x(sample),z(lenconv),aux(sample))          !syn_i = interp_i= sample
         do m=1,green_mesh%ncomp
          do k=1,green_mesh%ncomp   !Loop over 3 traction components
           ii = m + (j-1)*3
@@ -112,11 +115,13 @@
           kk = k + (j-1)*3 + (j-1)*green_mesh%ncomp*green_mesh%ncomp+(i-1)*green_mesh%stcomp*3
           mm = k + (i-1)*3
 !          used to check elements to be convolved
-!          print *, 'res', ii, 'conv tract', cont, 'adj', mm, 'time'
-          x(:) = green_mesh%res(:,ii) 
+          !print *, 'res', ii, 'conv tract', cont, 'adj', mm, 'sta', j, sample
+          x(:) = green_mesh%res(1:sample,ii)
+          !Time reverse for adjoint force
+          call order_inv(x,sample)   !syn_i = interp_i, lenobs
           y(:) = green_mesh%tractionvec(:,cont) 
-!         !Convolve slip rate model with the Green functions
-          call conv(x,green_mesh%syn_i,y,green_mesh%trac_i,&      !syn_i = interp_i
+         !Convolve slip rate model with the Green functions
+          call conv(x,sample,y,green_mesh%trac_i,&      !syn_i = interp_i  = sample
   &                z,lenconv)
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
@@ -127,26 +132,39 @@
          !do pr=1,lenconv
          !  write(111,*) z(pr)
          !enddo
-         tottrac(:,mm)= tottrac(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%syn_i)
-         !do pr=1,green_mesh%syn_i
+         p = green_mesh%delays+sample
+         do pr=1,sample
+          aux(pr) = z(p)
+          p = p -1
+         enddo
+         tottrac(1:sample,mm)= tottrac(1:sample,mm)+aux(1:sample)!z(green_mesh%delays+1:green_mesh%delays+sample)
+         !do pr=1,green_mesh%syn_i  = sample
          !  write(222,*) tottrac(pr,1)
          !enddo
          cont = cont + 1
          enddo     !Loop over 3 traction components
         enddo
+        deallocate(x,z,aux)
        enddo
       enddo
+print *, 'conv'
+!      do j = 1,green_mesh%nsta
 
-      k = green_mesh%syn_i
+!========esto ya no debe ser necesarion=======      
+      !k = green_mesh%syn_i                     !syn_i = sample
       do i=1,green_mesh%interp_i
-       green_mesh%tottrac(i,:) = tottrac(k,:)
-       k = k - 1
+       green_mesh%tottrac(i,:) = tottrac(i,:)      !aqui era k
+      ! k = k - 1
       enddo
+
+
+
+!      enddo
          !do pr=1,green_mesh%interp_i
          !  write(333,*) green_mesh%tottrac(pr,1)
          !enddo
 
-      deallocate(x,y,z)
+      deallocate(y)
       deallocate(tottrac)
       endsubroutine conadjtime
 

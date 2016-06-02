@@ -26,7 +26,8 @@
       implicit none
       INCLUDE 'green.h'
       TYPE (mesh) :: green_mesh
-      integer i
+
+      integer i, j, k
 
 
       !Flush residual array
@@ -34,17 +35,26 @@
       
       !Flush the cost function before computation
       green_mesh%costa=0.d0
+
+      !ALL residuals have same length      
+!      green_mesh%res(:,:) = green_mesh%syn(:,:) - green_mesh%obs(:,:)
+
       
-      green_mesh%res(:,:) = green_mesh%syn(:,:) - green_mesh%obs(:,:)
+      !Invert for different time windoes
+      k = 1
+      do i=1,green_mesh%nsta
+        do j=1,green_mesh%ncomp
+          green_mesh%res(1:green_mesh%samwin(i,2),k) = &
+  &       green_mesh%syn(1:green_mesh%samwin(i,2),k) - green_mesh%obs(1:green_mesh%samwin(i,2),k)
+          k = k + 1
+        enddo
+      enddo
 
       !Multiply by data covariance matrix (Weighting factors)
-      call prod_res(green_mesh)
-
-      !Time reverse for adjoint force
-      call order_inv(green_mesh%res,green_mesh%syn_i,green_mesh%stcomp)   !syn_i = interp_i
+      call prod_res(green_mesh)                                                                           !lenobs = syn_i
 
       !Print only if you want to check
-      call write_residual(green_mesh)
+      !call write_residual(green_mesh)
 
       !Transform residuals to Frequency domain
       !turn off this if convolutions are done in tme
@@ -78,8 +88,8 @@
          !Unit to read observations
          OPEN(iunit,FILE=green_mesh%dat//'obs_S'//green_mesh%sta//'_C'//green_mesh%comp,&
     &    status='unknown')
-         do k=1,green_mesh%syn_i
-          read(iunit,*) green_mesh%obs(k,p)    !syn_i = interp_i
+         do k=1,green_mesh%lenobs               !syn_i = lenobs    !2 june
+          read(iunit,*) green_mesh%obs(k,p)     !syn_i = interp_i  !31 may
          enddo
          close(iunit)
         p=p+1
@@ -222,58 +232,60 @@
       INCLUDE 'green.h'
       TYPE (mesh) :: green_mesh
 
-      integer i,j,k
-      real m1(green_mesh%stcomp), m2(green_mesh%stcomp), m3
-      real matr(green_mesh%syn_i,green_mesh%stcomp), m4(green_mesh%stcomp)
+      integer i, j, k, l, iunit, mm
+      real weights(3), cost, costa, al, be
+      real, dimension(:), allocatable :: resvec, vec
+      real, dimension(:,:), allocatable :: weightm, resvect
 
-      !Value of misfit (cost)
-      m3=0.
-      matr(:,:) = 0.
+      !MKL matrix multiplication coefficients
+      al = 1.d0
+      be = 0.d0
+      costa = 0.
 
       !All recordings with weight from file (Cd matrix)
       if (green_mesh%weig .eq. 2) then
-       do k=1,green_mesh%syn_i           !syn_i = interp_i
-        m1(:) = 0.
-        !res' * cd'
-        do i=1,green_mesh%stcomp
-         do j=1,green_mesh%stcomp
-          m1(i) = m1(i) + green_mesh%res(k,j)*green_mesh%cd(j,i)
-         enddo
+       iunit = 22
+       open(iunit,file=green_mesh%dat//'weights.dat',status='old',action='read')
+       k = 1
+       do i=1,green_mesh%nsta
+        mm = green_mesh%samwin(i,2)
+        read(iunit,*) weights
+        allocate(weightm(mm,mm),resvect(1,mm))
+        allocate(resvec(mm),vec(mm))
+        resvec(:) = 0.
+        vec(:) = 0.
+        weightm(:,:) = 0.
+        do j=1,green_mesh%ncomp
+            !Multiplication of matrices 
+            resvec(:) = green_mesh%res(1:mm,k)
+            do l=1,mm
+               weightm(l,l) = weights(j)
+            enddo
+            call sgemm('N','N',mm,1,mm,al,        &
+      &       weightm,mm,resvec,mm,be,vec,mm)
+            resvect(1,:) = vec(:)
+            call sgemm('N','N',1,1,mm,al,        &
+      &       resvect,1,vec,mm,be,cost,mm)
+            !Cumulative cost
+            costa = costa + cost
+            !Residuals weighted
+            green_mesh%res(1:mm,k) = vec(:)
+          k = k + 1
         enddo
-        !print *, 'm1', m1(45)
-        m2(:) = 0.
-        !cd * res
-        do i=1,green_mesh%stcomp
-         do j=1,green_mesh%stcomp
-          m2(i) = m2(i) + green_mesh%cd(i,j)*green_mesh%res(k,j)
-         enddo
-        enddo
-        !print *, 'm2', m2(45)
-        m4(:)=0.
-        do i=1,green_mesh%stcomp
-         m4(i) = green_mesh%cd(i,i)*m2(i)
-        enddo
-        matr(k,:) = m4(:)
-        !res'*cd'*cd*res
-        do i=1,green_mesh%stcomp
-          m3 = m3 + m2(i)*m1(i)
-        enddo
+       deallocate(weightm,resvec,resvect,vec)
        enddo
-       green_mesh%res(:,:) = matr(:,:)
-
-
+       close(iunit)
       !All recordings with weight = 1
       elseif (green_mesh%weig .eq. 1) then 
-       m3 = 0.
-       call fcost(green_mesh%res,green_mesh%stcomp,green_mesh%syn_i,m3)
+       call fcost(green_mesh%res,green_mesh%stcomp,green_mesh%syn_i,costa)
        !print *, 'm3', m3
       else 
        print *, 'Wrong weighting value: Check dat/weights.info'
       endif
 
 
-      green_mesh%costa = m3
-
+      green_mesh%costa = costa
+      !print *, green_mesh%costa, 'costa'
 
       endsubroutine prod_res
 

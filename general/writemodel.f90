@@ -115,7 +115,7 @@
        k = 1
        do i=1,green_mesh%msub     !number of subfaults
          do j=1,green_mesh%ncomp
-          do m=1,green_mesh%syn_sam               !only first time window used
+          do m=1,green_mesh%interp_i               !only first time window used
            read(iunit,*) green_mesh%modelp(k)
            k = k + 1
           enddo

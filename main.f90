@@ -113,7 +113,6 @@
 
       OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
       read(iunit,*) green_mesh%for_opt
-      read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
       close(iunit)
 
       if (green_mesh%for_opt .eq. 1) then
@@ -146,6 +145,10 @@
 
       ! Read tractions from file (time domain) 
       call read_time(green_mesh)
+
+         !Assuming a REALTIME picking (STALTA) detect time window for inversion
+         !======Now it only reads from a file==================================
+         call windows(green_mesh)
 
 !===================================================!
 !     FIRST FORWARD AND ADJOINT

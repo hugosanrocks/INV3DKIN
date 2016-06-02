@@ -112,7 +112,8 @@
 !============================================================================!
 
       !9
-      allocate(green_mesh%syn(green_mesh%syn_i,green_mesh%stcomp))   !interp_i = syn_sam
+      allocate(green_mesh%syn(green_mesh%lenobs,green_mesh%stcomp))   !interp_i = syn_sam    31 may
+                                                                      !syn_i = lenobs         2 june
       !interp_i = syn_i          changed
 
       !10
@@ -123,7 +124,7 @@
 
       !syn = matrix to store observed seismograms at receivers (time)
       !12
-      allocate(green_mesh%obs(green_mesh%syn_i,green_mesh%stcomp))
+      allocate(green_mesh%obs(green_mesh%lenobs,green_mesh%stcomp))      !lenobs = syn_i   2june
       !interp_i = syn_i          changed
 
       !13
@@ -149,9 +150,10 @@
       !23
       allocate(green_mesh%tseries(green_mesh%syn_i))
       !interp_i = syn_i           filter the observations
-
       !24
       allocate(green_mesh%samwin(green_mesh%stcomp,2))
+      !25
+      allocate(green_mesh%synsam(green_mesh%nsta))
 
       end subroutine initialize
 

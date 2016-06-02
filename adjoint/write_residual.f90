@@ -48,7 +48,7 @@
          !ASCII file with residuals (used to check)
          OPEN(99,FILE=green_mesh%out//'res_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
     &    status='unknown')
-         do i=1,green_mesh%syn_i     !syn_i = interp_i
+         do i=1,green_mesh%samwin(ii,2)     !syn_i = interp_i
           write(iunit,rec=i) green_mesh%res(i,k)
           write(99,*) green_mesh%res(i,k)
          enddo
@@ -57,6 +57,5 @@
         k=k+1
         enddo
        enddo
-
 
        end subroutine write_residual

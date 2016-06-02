@@ -47,7 +47,6 @@
       !Write information about synthetics
       OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
       read(iunit,*) green_mesh%for_opt
-      read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
       close(iunit)
 
 
