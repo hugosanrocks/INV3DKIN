@@ -95,7 +95,6 @@
       real, dimension(:,:), allocatable :: tottrac
 
       scalfac=green_mesh%moment/(green_mesh%msub)
-      print *, green_mesh%delays, 'delay'
 
       lenconv = green_mesh%trac_i + green_mesh%syn_i - 1        !syn_i = interp_i
       allocate(x(green_mesh%syn_i),y(green_mesh%trac_i),z(lenconv))     !syn_i = interp_i

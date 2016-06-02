@@ -14,7 +14,7 @@
       integer :: iunit, iunit2, m, i, j, k
 
 
-      call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
+      !call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
 
 
        iunit2=44
@@ -50,6 +50,49 @@
 
 
 
+
+
+      subroutine read_modelf(green_mesh)
+
+      INCLUDE 'green.h'
+!     optim type strcuture
+      TYPE (mesh) :: green_mesh
+      integer :: iunit, iunit2, m, i, j, k
+
+
+      call coor_trans(green_mesh)
+      green_mesh%model(:) = 0.
+      green_mesh%model2(:) = 0.
+
+
+!     Variables needed only
+       iunit=22
+       OPEN(iunit,FILE=green_mesh%dat//'modelpri.dat',&
+  &         status='old',action='read')
+
+       !Rearrange model info into a 1D vector
+       k = 1
+       do i=1,green_mesh%msub     !number of subfaults
+         do m=1,green_mesh%interp_i
+           read(iunit,*) green_mesh%slipr(m,:)
+         enddo
+         do j=1,green_mesh%ncomp
+          do m=1,green_mesh%interp_i
+           green_mesh%model(k) = green_mesh%slipr(m,j)
+           k = k + 1
+          enddo
+         enddo
+       enddo
+       close(iunit)
+
+      call model_d(green_mesh%model,green_mesh%model2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
+
+
+      end subroutine read_modelf
+
+
+
+
       subroutine read_model(green_mesh)
 
       implicit none
@@ -58,15 +101,29 @@
       TYPE (mesh) :: green_mesh
 
 !     Variables needed only here
-      integer :: iunit
+      integer :: iunit, i, j, k, m, jump
 
+      !Flush the array used to read prior model (slip-rate)
+      green_mesh%modelp(:) = 0.
+
+      jump = 151 - 75         !to be changed
 
        iunit=22
-       OPEN(iunit,FILE=green_mesh%out//'model.out',&
-  &         status='unknown')
+       OPEN(iunit,FILE=green_mesh%dat//'modelpri.dat',&
+  &         status='old',action='read')
 
+       k = 1
+       do i=1,green_mesh%msub     !number of subfaults
+         do j=1,green_mesh%ncomp
+          do m=1,green_mesh%syn_sam               !only first time window used
+           read(iunit,*) green_mesh%modelp(k)
+           k = k + 1
+          enddo
+           k = k + jump - 1
+         enddo
+       enddo
 
-           read(22,*) green_mesh%model
+       !Set prediction here
 
 
        close(iunit)

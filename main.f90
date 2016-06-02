@@ -110,11 +110,24 @@
       call read_info(green_mesh)
       ! Initialize arrays
       call initialize(green_mesh)
-      ! Estimate slip vector direction
-      call coor_trans(green_mesh)
-!==================================================!
 
-call initializeadj(green_mesh)
+      OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
+      read(iunit,*) green_mesh%for_opt
+      read(iunit,*) green_mesh%syn_sec, green_mesh%syn_sam
+      close(iunit)
+
+      if (green_mesh%for_opt .eq. 1) then
+        call coor_trans(green_mesh)
+      elseif (green_mesh%for_opt .eq. 2) then
+        call read_modelf(green_mesh)
+        print *, ' Prior model was read from dat/modelpri.dat '
+!        call write_model(green_mesh,green_mesh%model,green_mesh%modelsize)
+!stop
+      else
+        write(*,*) 'Wrong forward option, check dat/syn.info'
+      endif
+!==================================================!
+      call initializeadj(green_mesh)
 !=============================================!
 !     INITIALIZE REGULARIZING MATRICES
 !===================================================!

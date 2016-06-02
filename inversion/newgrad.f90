@@ -61,20 +61,21 @@
        !call model_pri(green_mesh)
        !print *, 'prior', green_mesh%costm
        !Estimate cost from model term and gradient contribution
-       !call modeltimer(green_mesh)
+       call modeltimer(green_mesh)
        !call model1d(green_mesh)    !space correlation
        !call model_edge(green_mesh)  !edge effect
        !call modeltime(green_mesh)  !time correction
        !print *, 'costa', green_mesh%costa, 'cost corr', green_mesh%costm
-       green_mesh%costa = green_mesh%costa !+ &
-!  &    green_mesh%lam1*green_mesh%costm
-!       green_mesh%grad2(:) = green_mesh%grad2(:) + &
-!  &    green_mesh%lam1*green_mesh%gradad(:)
+       print *, 'Cost: ', green_mesh%costa
+       green_mesh%costa = green_mesh%costa + &
+  &    green_mesh%lam1*green_mesh%costm
+       green_mesh%grad2(:) = green_mesh%grad2(:) + &
+  &    green_mesh%lam1*green_mesh%gradad(:)
        !call modeltimer(green_mesh)  !time correction
-       !print *, 'costa', green_mesh%costa, 'cost time', green_mesh%costm
+       print *, 'costa', green_mesh%costa, 'cost time', green_mesh%costm
        !green_mesh%costa = green_mesh%costa + green_mesh%lam2*green_mesh%costm
        !green_mesh%grad2(:) = green_mesh%grad2(:) + green_mesh%lam2*green_mesh%gradad(:)
-       print *, 'Cost: ', green_mesh%costa
+
 
       ! do i=1,green_mesh%modelsize2
       !   write(81,*) green_mesh%model2(i)

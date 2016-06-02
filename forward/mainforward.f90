@@ -56,7 +56,7 @@
       if (green_mesh%for_opt .eq. 1) then
       call coor_trans(green_mesh)
       elseif (green_mesh%for_opt .eq. 2) then
-      call read_model(green_mesh)
+      call read_modelf(green_mesh)
       print *, 'read ready'
       else
       write(*,*) 'Wrong forward option, check dat/syn.info'
