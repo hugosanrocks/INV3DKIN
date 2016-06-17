@@ -89,6 +89,7 @@
       ! Directory containing output data files
       green_mesh%out='out/'
 
+      !CHANGE TO DOUBLE PRECISSION ==== NOT YET IMPLEMENTED
       !var_type%var1=1.d0
       !print *, var_type%var1
 
@@ -101,7 +102,6 @@
       !call preprocess(green_mesh)
 !===================================================!
 
-
 !===================================================!
 !     READ INPUT INFO AND INITIALIZE ARRAYS
 !===================================================!
@@ -110,45 +110,74 @@
       call read_info(green_mesh)
       ! Initialize arrays
       call initialize(green_mesh)
+!===================================================!
 
-      OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
-      read(iunit,*) green_mesh%for_opt
-      close(iunit)
 
+!===================================================!
+      ! inversion a priori options                                       !
+      ! 1 = start from slip-rate 0                                       !
+      ! 2 = start from a prior model                                     !
+      ! 3 = only for forward modeling resulting models                   !
+!===================================================!
       if (green_mesh%for_opt .eq. 1) then
         call coor_trans(green_mesh)
-      elseif (green_mesh%for_opt .eq. 2) then
-        call read_modelf(green_mesh)
-        print *, ' Prior model was read from dat/modelpri.dat '
-!        call write_model(green_mesh,green_mesh%model,green_mesh%modelsize)
-!stop
+        print *, ' Initial model from dat/vitesse.out'
+      elseif (green_mesh%for_opt .eq. 99) then
+        call read_model(green_mesh)
+        print *, ' Model read from dat/model.out'
       else
-        write(*,*) 'Wrong forward option, check dat/syn.info'
+        call read_modelf(green_mesh)
+        print *, ' Prior model read from dat/modelpri.dat'
       endif
 !==================================================!
+
+!===================================================!
       call initializeadj(green_mesh)
-!=============================================!
+!===================================================!
+
+
+!===================================================!
 !     INITIALIZE REGULARIZING MATRICES
 !===================================================!
       IF (green_mesh%msub .EQ. 1) THEN
-
+       !Only one subfault = Point source
       ELSE
-      ! Initialize model regularizing terms
-!      call model_pri(green_mesh)
-!      print *, green_mesh%costm, 'costm'
-!      call laplacian(green_mesh)
+      ! Initialize regularizing terms
+       !call model_pri(green_mesh)
+       !call laplacian(green_mesh)
+      !Rupture time regularization
       call exp_covar(green_mesh)
-!      call time_corr(green_mesh)
-!      call edge(green_mesh)
+       !Correlation in time
+       !call time_corr(green_mesh)
+       !Penalize slip at the borders of the fault
+       !call edge(green_mesh)
+       !Penalize difference at hypocenter location
+       !call hypo(green_mesh)
       ENDIF
 !===================================================!
 
+!===================================================!
+!     Read pseudo Green's functions                 !
+!===================================================!
       ! Read tractions from file (time domain) 
       call read_time(green_mesh)
+!===================================================!
 
-         !Assuming a REALTIME picking (STALTA) detect time window for inversion
-         !======Now it only reads from a file==================================
-         call windows(green_mesh)
+!===================================================!
+!     Assuming a REALTIME picking (STALTA) detect   !
+!     time window for inversion. Now it only reads  !
+!     the time windows from a file!                 !
+!===================================================!
+      call windows(green_mesh)
+!===================================================!
+
+
+
+!===================================================!
+!     INVERSION STARTS HERE                         !
+!===================================================!
+
+!     CYCLE ON THE TIME WINDOWS                     !
 
 !===================================================!
 !     FIRST FORWARD AND ADJOINT
@@ -172,8 +201,15 @@
       WRITE(6, *) '================================================='
 !===================================================!
 
+
+       call read_grad(green_mesh)
+       call modeltimer(green_mesh)
+       print *, 'Cost: ', green_mesh%costa, 'Cost time: ',green_mesh%costm
        green_mesh%costa = green_mesh%costa + &
   &    green_mesh%lam1*green_mesh%costm
+       green_mesh%grad2(:) = green_mesh%grad2(:) + &
+  &    green_mesh%lam1*green_mesh%gradad(:)
+       print *, 'costa', green_mesh%costa
 
 !===================================================!
 !     OPTIMIZATION STRATEGY 
@@ -190,8 +226,10 @@
       ! slip and normal vector2
       !call ortogonal(green_mesh)
 
+
       ! Destroy all the memory used
       call destroy_arrays(green_mesh)
+
 
       end program INV3DKIN
 

@@ -7,8 +7,8 @@
 
         integer i, j, k, iunit
         real dist(green_mesh%msub,green_mesh%msub), disthyp(green_mesh%msub)
-        real lambda, lambda0, sigmam, factor, hypo(1,3)
-        integer hyp
+        real lambda, lambda0, sigmam, factor, hypo(1,3), t, dt
+        integer hyp, front(green_mesh%msub,5)
 
         !THIS MUST BE CHANGED TO DETECT HYPOCENTER AUTMATICALY
         hypo(1,1) = 58.000
@@ -44,11 +44,7 @@
         do j=1,green_mesh%msub
          dist(i,j) = sqrt( (green_mesh%fault(j,1)-green_mesh%fault(i,1))**2 +& 
   &                (green_mesh%fault(j,2)-green_mesh%fault(i,2))**2 +&
-  &                (green_mesh%fault(j,3)-green_mesh%fault(i,3))**2  )*1000.
-         green_mesh%cm(i,j) = factor * exp(-1.* (dist(i,j) / lambda) )
-!          if ((dist(i,j) .lt. 1510) .and. (i .ne. j)) then
-!            green_mesh%la(i,j) = -1.
-!          endif
+   &                (green_mesh%fault(j,3)-green_mesh%fault(i,3))**2  )*1000.
         enddo
        enddo
 
@@ -60,30 +56,21 @@
        enddo
 
 
-!       green_mesh%la(:,:) = green_mesh%la(:,:) / 1500.**2
-!        do i=1,288
-!         do j=1,288
-!          write(33,*) green_mesh%la(i,j)
-!         enddo
-!        enddo
 
-!commented 31 may
-       !Used only to check values of distance and covariance
-!       k=1
-!       do i=1,green_mesh%msub
-!        do j=1,green_mesh%msub
-!       !  write(88,*) dist(i,:)
-!         write(999,*) green_mesh%cm(i,j)
-!       !  k=k+1
-!        enddo
-!        enddo
-
-!commented 31 may
-!       open(111,file='dat/corr.dat',status='unknown')
-!       do i=1,green_mesh%msub
-!        read(111,*) green_mesh%cm(i,:)
-!       enddo
-!       close(111)
+       t  = 0.          !initial time
+       dt = 2.          !duration of rupture windows
+       front(:,:) = 0   !flush array
+       do i=1,5
+        t = t + dt
+        do j=1,green_mesh%msub
+           if (disthyp(j) .lt. t*4620.*0.7 ) then
+             front(j,i) = 1
+           endif
+        enddo
+       enddo
+       do i=1,green_mesh%msub
+           write(44,*) front(i,:)
+       enddo
 
        !Travel times
        !TO BE CHANGED FOR VARIABLE VS VELOCITY

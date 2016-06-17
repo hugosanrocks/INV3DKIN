@@ -74,7 +74,9 @@
       !Write information about synthetics
       write(6,*) ' Reading inforamtion for synthetics '
       OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
-      read(iunit,*) green_mesh%for_opt
+      read(iunit,*) green_mesh%for_opt                         !null or prior information
+      read(iunit,*) green_mesh%optf                           !filter observations
+      read(iunit,*) green_mesh%optm, green_mesh%mext          !extend model length
       !For inversion ==== for_opt = 1
       close(iunit)
 

@@ -1,0 +1,88 @@
+clear all
+close all
+
+ndip=25;
+nstr=25;
+
+
+fault2d=load('fault_2d.out');
+fault3d=load('fault_3d.out');
+stat=load('stations_2d.out');
+epi=load('epicenter.out');
+
+sname=importdata('stations.name');
+
+nstat=length(stat);
+nsubf=length(fault2d);
+
+stat=stat/1e3;
+fault2d=fault2d./1e3;
+fault3d=fault3d./1e3;
+
+xmin=min(stat(:,1));
+xmax=max(stat(:,1));
+ymin=min(stat(:,2));
+ymax=max(stat(:,2));
+
+% Create fault arrays
+icont=0;
+for idip=1:ndip
+    %dip(idip)=fault3d(icont,3);
+    for istr=1:nstr
+        icont=icont+1;
+        depth(istr,idip)=fault3d(icont,4);
+        %str(istr)=fault3d(icont,2);
+    end
+end
+
+%[X,Y]=meshgrid(fault3d(:,2),fault3d(:,3));
+%Z=meshgrid(fault3d(:,4));
+%
+
+figure(1)
+
+% Plot fault
+for isubf=1:nsubf
+    plot(fault2d(isubf,1),fault2d(isubf,2),'ob'); hold on
+end
+
+% Plot stations
+for istat=1:nstat
+    plot(stat(istat,1),stat(istat,2),'or','LineWidth',2); hold on
+    text(stat(istat,1)-9,stat(istat,2)+8,sname(istat),'fontsize',10); hold on
+end
+
+% Plot epicenter
+plot(epi(1),epi(2),'ok','LineWidth',2); hold on
+
+axis image
+axis([xmin-30 xmax+30 ymin-30 ymax+30])
+
+xlabel('Longitude UTM (km)')
+ylabel('Latitude UTM (km)')
+
+filename2 = ['fault_plot_2d.eps'];    
+print ('-depsc2' , filename2);
+
+%%
+
+x=fault3d(:,2);
+y=fault3d(:,3);
+Z=fault3d(:,4);
+
+xlin = linspace(min(x),max(x),33);
+ylin = linspace(min(y),max(y),33);
+[X,Y] = meshgrid(xlin,ylin);
+% f = scatteredInterpolant(x,y,z);
+% Z = f(X,Y);
+
+figure(2)
+
+mesh(X,Y,Z)
+
+
+
+%surf(X,Y,Z)
+%mesh(depth)
+%plot3(fault3d(icont,2),fault3d(icont,3),fault3d(icont,4))
+

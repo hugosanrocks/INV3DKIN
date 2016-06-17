@@ -47,6 +47,7 @@
       !Write information about synthetics
       OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
       read(iunit,*) green_mesh%for_opt
+      read(iunit,*) green_mesh%optf
       close(iunit)
 
 
@@ -56,13 +57,21 @@
       call coor_trans(green_mesh)
       elseif (green_mesh%for_opt .eq. 2) then
       call read_modelf(green_mesh)
-      print *, 'read ready'
+      print *, ' Prior model read from dat/modelpri.dat'
+      elseif (green_mesh%for_opt .eq. 3) then
+      call read_model(green_mesh)
+      print *, ' Model read from dat/model.out'
       else
-      write(*,*) 'Wrong forward option, check dat/syn.info'
+      write(*,*) ' Wrong forward option, check dat/syn.info'
       endif
 
       !Read Green's functions
       call read_time(green_mesh)
+
+         !Assuming a REALTIME picking (STALTA) detect time window for inversion
+         !======Now it only reads from a file==================================
+         call windows(green_mesh)
+
 
       !Compute the forward problem and compute first synthetics
       !asociated with the first model (0 ZEROS)

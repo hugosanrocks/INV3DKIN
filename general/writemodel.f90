@@ -11,18 +11,22 @@
       real, intent(inout) :: model(vecl)                   ! current gradient
       real y(439*3*1)
 !     Variables needed only here
-      integer :: iunit, iunit2, m, i, j, k
+      integer :: iunit, iunit2, iunit3, m, i, j, k
 
 
       !call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
 
 
        iunit2=44
-       OPEN(iunit2,FILE=green_mesh%out//'model.out',&
+       OPEN(iunit2,FILE=green_mesh%dat//'modelpri.dat',&
   &         status='unknown')
 
        iunit=22        
        OPEN(iunit,FILE=green_mesh%dat//'slip_xyz.ascii',&
+  &         status='unknown')
+
+       iunit3=66
+       OPEN(iunit3,FILE=green_mesh%out//'model.out',&
   &         status='unknown')
 
        !Rearrange model info into a 1D vector
@@ -31,17 +35,18 @@
          do j=1,green_mesh%ncomp
           do m=1,green_mesh%interp_i
            green_mesh%slipr(m,j) = green_mesh%model(k) !3D coordinates slip-rate
-           write(iunit2,*) green_mesh%model(k)
+           write(iunit3,*) green_mesh%model(k)
            k = k + 1
           enddo
          enddo
          do m=1,green_mesh%interp_i
            write(iunit,*) green_mesh%slipr(m,:)
+           write(iunit2,*) green_mesh%slipr(m,:)
          enddo
        enddo
 
 
-        
+       close(iunit3)
        close(iunit2)
        close(iunit)
 
@@ -65,6 +70,7 @@
       green_mesh%model2(:) = 0.
 
 
+
 !     Variables needed only
        iunit=22
        OPEN(iunit,FILE=green_mesh%dat//'modelpri.dat',&
@@ -73,19 +79,26 @@
        !Rearrange model info into a 1D vector
        k = 1
        do i=1,green_mesh%msub     !number of subfaults
-         do m=1,green_mesh%interp_i
+         do m=1,green_mesh%interp_i - green_mesh%mext
            read(iunit,*) green_mesh%slipr(m,:)
          enddo
          do j=1,green_mesh%ncomp
-          do m=1,green_mesh%interp_i
+          do m=1,green_mesh%interp_i - green_mesh%mext
            green_mesh%model(k) = green_mesh%slipr(m,j)
            k = k + 1
           enddo
+          !Fill with zeros to increase model size !
+          if (green_mesh%optm .eq. 2) then
+            k = k + green_mesh%mext
+          endif
+          !===== Prior information option ========!
          enddo
        enddo
        close(iunit)
 
       call model_d(green_mesh%model,green_mesh%model2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
+      !Save prior model to measure the distance to it
+      green_mesh%model2p(:) = green_mesh%model2(:)
 
 
       end subroutine read_modelf
@@ -104,29 +117,30 @@
       integer :: iunit, i, j, k, m, jump
 
       !Flush the array used to read prior model (slip-rate)
-      green_mesh%modelp(:) = 0.
+      green_mesh%model(:) = 0.
 
       jump = 151 - 75         !to be changed
 
        iunit=22
-       OPEN(iunit,FILE=green_mesh%dat//'modelpri.dat',&
+       OPEN(iunit,FILE=green_mesh%dat//'model.out',&
   &         status='old',action='read')
 
        k = 1
        do i=1,green_mesh%msub     !number of subfaults
          do j=1,green_mesh%ncomp
           do m=1,green_mesh%interp_i               !only first time window used
-           read(iunit,*) green_mesh%modelp(k)
+           read(iunit,*) green_mesh%model(k)
            k = k + 1
           enddo
-           k = k + jump - 1
          enddo
        enddo
 
-       !Set prediction here
+      !Set prediction here
 
 
-       close(iunit)
+      close(iunit)
+
+      call model_d(green_mesh%model,green_mesh%model2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
 
 
       end subroutine read_model

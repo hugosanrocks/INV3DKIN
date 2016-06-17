@@ -19,7 +19,7 @@
        REAL*4, DIMENSION(:,:),POINTER :: fault                    ! Position of each subfault
 
        REAL*4 simt, simdt, slipt, slipdt                 	  ! Simulation t and dt (Green's functions), slip t and dt (to find)
-       REAL*4, DIMENSION(:),POINTER :: cost, diag             	  ! Cost function
+       REAL*4, DIMENSION(:),POINTER :: cost, diag, diag2             	  ! Cost function
        REAL*4 costa, costm, lam1, lam2, lam3                   	  ! Total accumulative cost
 
        REAL*4 moment, mu, rt, ot, syn_sec                     	  ! seismic moment, shear modulus, rise time, origin time
@@ -56,7 +56,7 @@
        COMPLEX, DIMENSION (:,:), POINTER :: tracf, slipf, resif
        INTEGER tfft_i                                             ! Counter used by fftw3
 
-       INTEGER debug_i, stress_opt, for_opt                       ! Debug options, origin of stress files, forward option
+       INTEGER debug_i, stress_opt, for_opt, optf, optm, mext           ! Debug options, origin of stress files, forward option
        LOGICAL debug         
 
 

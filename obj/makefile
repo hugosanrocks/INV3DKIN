@@ -10,6 +10,11 @@ ifeq ($(findstring pohualli,$(HOST)), pohualli)
 include ../install/make.pohualli.inc
 endif
 
+ifeq ($(findstring ist,$(HOST)), ist)
+include ../install/make.istoar.inc
+endif
+
+
 #
 
 all : FWI_INV3DKIN FORWARD PREPROC_GEODG
@@ -33,7 +38,7 @@ FFLAGS2   = -openmp
 
 #first : test_Connect1D
 
-COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o time_corr.o covedge.o modeledge.o timemask.o modeltime.o covtime.o covtimer.o modeltimer.o laplacian.o covtiko.o modeltiko.o modelpri.o covpri.o
+COV_OBJ     =  covariance.o model1d.o covmodel.o exp_covar.o edge.o hypo.o time_corr.o covedge.o modeledge.o timemask.o modeltime.o covtime.o covtimer.o modeltimer.o laplacian.o covtiko.o modeltiko.o modelpri.o covpri.o modelhypo.o covhypo.o
 
 FILTER_OBJ  =  init_butterworth.o filtfilt_butterworth.o
 
@@ -57,7 +62,7 @@ MODEL_GRAD_OBJ = writemodel.o newgrad.o readgrad.o
 
 ALL_OBJ = $(INIT_OBJ) $(PREPROC_OBJ) $(GENERAL_OBJ) $(OPTIM_OBJ) $(MAIN_OBJ) $(FORWARD_OBJ) $(MODEL_GRAD_OBJ) $(ADJOINT_OBJ) $(COV_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ)
 
-FOR_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) mainforward.o writemodel.o $(INIT_OBJ) $(FORWARD_OBJ) $(GENERAL_OBJ)
+FOR_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ) residual.o fcost.o mainforward.o writemodel.o $(INIT_OBJ) $(FORWARD_OBJ) $(GENERAL_OBJ)
 
 PRE_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) linreg.o prep.o rotate.o
 
@@ -73,7 +78,7 @@ PREPROC_GEODG : $(PRE_OBJ)
 	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(PRE_OBJ) $(LIBS2) -openmp
 
 FORWARD : $(FOR_OBJ)
-	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2) -openmp
+	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(FOR_OBJ) $(LIBS2) $(LIBS) $(LIBS3) -openmp
 
 FWI_INV3DKIN : $(ALL_OBJ)
 	$(F90) $(FFLAGS) -o $(INV_EXE_DIR)/$@ $(ALL_OBJ) $(LIBS) $(LIBS2) $(LIBS3)

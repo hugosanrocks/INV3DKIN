@@ -8,8 +8,9 @@
        real, dimension(:,:), allocatable :: matrix, f
        real, dimension(:), allocatable :: t
        real dt, lambda
-       integer i, j, iunit, tsam, sub, ind(288), record, reclen, k, nuc(5)
+       integer i, j, iunit, tsam, sub, ind(green_mesh%msub), record, reclen, k, nuc(9)
 
+       iunit = 33
        dt = green_mesh%slipdt
        tsam = green_mesh%interp_i
        sub = green_mesh%msub
@@ -18,9 +19,14 @@
 !may 31
        nuc(1)=210
        nuc(2)=211
-       nuc(3)=186
-       nuc(4)=187
-       nuc(5)=235
+       nuc(3)=212
+       nuc(4)=185
+       nuc(5)=186
+       nuc(6)=187
+       nuc(7)=234
+       nuc(8)=235
+       nuc(9)=236
+
 
        allocate(matrix(sub,sub),t(tsam),f(tsam,sub))
 
@@ -32,25 +38,30 @@
         t(i) = t(i-1) + dt
        enddo
 
+       !Constant travel time   VS_MAX
        ind(:) = green_mesh%rsamp(:)
+       !Estimated eikonal
+       open(iunit,file=green_mesh%dat//'ttimes.info',status='old',&
+  &         action='read')
+       !read(iunit,*) ind(:)
+       !print *, ind
+       close(iunit)
 
        do j=1,sub
         do i=ind(j),tsam
          f(i,j) = exp(-1. * (t(i) - t(ind(j))) / lambda )  !0.1 bueno !4 malo
         enddo
        enddo
-       f(:,210) = 1.
-       f(:,211) = 1.
-       f(:,186) = 1.
-       f(:,187) = 1.
-       f(:,235) = 1.
-       ind(210) = 0
-       ind(211) = 0
-       ind(186) = 0
-       ind(187) = 0
-       ind(235) = 0
 
-       do j=1,5
+       !Nucleation is not penalize at first approach
+       do i=1,9
+       f(:,nuc(i)) = 1.
+       ind(nuc(i)) = 0
+       enddo
+       !ind(185) = 12
+       !ind(186) = 6
+
+       do j=1,9
         do i=1,tsam
          f(i,nuc(j)) = exp(-1. * (t(i) - t(ind(nuc(j)))) / 0.04 )  !0.1 bueno !4 malo
         enddo
@@ -66,11 +77,12 @@
        do i=1,sub
         matrix(i,i) = f(j,i)
         green_mesh%diag(k) = f(j,i)
-        write(99,*) green_mesh%diag(k)
+        !write(99,*) green_mesh%diag(k)
         k=k+1
        enddo
        write(iunit,rec=j) matrix
        enddo      
+       close(iunit)
 
        !do i=1,sub
        ! do k=1,sub

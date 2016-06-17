@@ -74,7 +74,7 @@
       TYPE (mesh) :: green_mesh
       TYPE (butter) :: butt
 
-      integer ii, jj, k, iunit, p, optf
+      integer ii, jj, k, iunit, p
       integer nrec, nstep
       real dt
 
@@ -96,19 +96,18 @@
         enddo !loop over 3 components
        enddo  !loop over number of stations
 
-       optf = 2
-       if (optf .eq. 1) then
-
-       do ii=1,green_mesh%stcomp
+       
+       if (green_mesh%optf .eq. 1) then
           !-------------------------------------------------------------------
           !OPTIONAL FILTER APPLIED TO GREEN'S FUNCTIONS
           butt%order = 2
           butt%fc = 1.
-          nstep = green_mesh%syn_i
+          nstep = green_mesh%lenobs
           nrec  = green_mesh%stcomp
           dt    = green_mesh%slipdt
           !-------------------------------------------------------------------
           !Parameters needed
+       do ii=1,green_mesh%stcomp
           !Asign the time series to be filtered
           green_mesh%tseries(:) = green_mesh%obs(:,ii)
           !Initialize the butterworth filter

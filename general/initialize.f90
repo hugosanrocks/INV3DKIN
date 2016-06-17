@@ -76,8 +76,10 @@
       !interp_i = simsam    changed
 
       !1D vectors used for optimization toolbox
-      green_mesh%modelsize=green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
-      green_mesh%modelsize2=green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
+      green_mesh%interp_i = green_mesh%interp_i + green_mesh%mext
+      print *, green_mesh%interp_i, 'interp_i'
+      green_mesh%modelsize = green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
+      green_mesh%modelsize2 = green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
 
       !3 4 5
       allocate(green_mesh%model(green_mesh%modelsize))
@@ -140,6 +142,8 @@
       !18
       allocate(green_mesh%rsamp(green_mesh%msub))
       !19
+      allocate(green_mesh%diag2(green_mesh%msub))
+!check this
       allocate(green_mesh%diag(green_mesh%msub*green_mesh%interp_i))
       !20
       allocate(green_mesh%la(green_mesh%msub,green_mesh%msub))
@@ -148,10 +152,10 @@
       !22
       allocate(green_mesh%model2p(green_mesh%modelsize2))
       !23
-      allocate(green_mesh%tseries(green_mesh%syn_i))
+      allocate(green_mesh%tseries(green_mesh%lenobs))
       !interp_i = syn_i           filter the observations
       !24
-      allocate(green_mesh%samwin(green_mesh%stcomp,2))
+      allocate(green_mesh%samwin(green_mesh%stcomp,3))
       !25
       allocate(green_mesh%synsam(green_mesh%nsta))
 
@@ -228,6 +232,7 @@
       deallocate(green_mesh%rtimes)      !17
       deallocate(green_mesh%rsamp)       !18
       deallocate(green_mesh%diag)        !19
+      deallocate(green_mesh%diag2)        !19
       deallocate(green_mesh%la)
       deallocate(green_mesh%modelp)
       deallocate(green_mesh%model2p)

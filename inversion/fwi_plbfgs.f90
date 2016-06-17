@@ -10,12 +10,14 @@
       type (optim_type) :: optim
 
 !     Variables needed only here
-      integer :: n, i                                 ! dimension of the problem
-      real,dimension(:),allocatable :: grad_preco  ! current gradient
-      character*4 :: FLAG                          ! communication FLAG 
+      integer :: n, i, j, k, l, win(green_mesh%msub), cont                                        ! dimension of the problem
+      real,dimension(:),allocatable :: grad_preco, model, grad     ! current gradient
+      character*4 :: FLAG                                          ! communication FLAG 
 
 !        Save memory for current model, current gradient, preco gradient
          allocate(grad_preco(green_mesh%modelsize2))
+         allocate(model(green_mesh%modelsize2))
+         allocate(grad(green_mesh%modelsize2))
 
 !####### Initialize values ################################        
          n=green_mesh%modelsize2 ! dimension
@@ -25,10 +27,56 @@
          optim%debug=.false.     ! level of details for output files
          optim%l=20
 
-         green_mesh%iter=0
-         write(green_mesh%iter_i,'(I5.5)') green_mesh%iter
+         open(36,file='front.data',status='old',action='read')
+         do i=1,green_mesh%msub
+           read(36,*) win(i)
+         enddo
 
-         call read_grad(green_mesh)
+
+         if (green_mesh%for_opt .ne. 1) then
+         !Arrange slip rate model in 1D vector
+         l = 1
+         do i=1,green_mesh%msub
+          if (win(i) .ne. 1) then
+           cont=1+(i-1)*2*green_mesh%interp_i
+           !Decompose slip vector along stk and along dip = 2 directions
+            do j=1,2
+             do k=1,green_mesh%interp_i
+              model(l) = green_mesh%model2(cont)
+              grad(l)  = green_mesh%grad2(cont)
+              l = l + 1
+             enddo
+            enddo
+          else
+          endif
+         enddo          
+         endif
+
+
+         if (green_mesh%for_opt .ne. 1) then
+         !Arrange slip rate model in 1D vector
+         l = 1
+         do i=1,green_mesh%msub
+          if (win(i) .ne. 1) then
+           cont=1+(i-1)*2*green_mesh%interp_i
+print *, 'back mod',cont, 'cut mod',l, i
+           !Decompose slip vector along stk and along dip = 2 directions
+            do j=1,2
+             do k=1,green_mesh%interp_i
+!              model(l) = green_mesh%model2(cont)
+!              grad(l)  = green_mesh%grad2(cont)
+              l = l + 1
+             enddo
+            enddo
+          else
+          endif
+         enddo
+         endif
+
+
+
+!maybe needed
+!         call read_grad(green_mesh)
 
 !
 !       green_mesh%grad2(:) = green_mesh%grad2(:) + &
@@ -60,5 +108,5 @@
 
 
 
-      deallocate(grad_preco)
+      deallocate(grad_preco,model,grad)
       end subroutine fwi_plbfgs
