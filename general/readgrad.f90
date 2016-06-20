@@ -29,5 +29,5 @@
 
       call model_d(g,green_mesh%grad2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
 
-
+      deallocate(g)
       end subroutine read_grad

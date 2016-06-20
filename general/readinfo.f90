@@ -77,6 +77,7 @@
       read(iunit,*) green_mesh%for_opt                         !null or prior information
       read(iunit,*) green_mesh%optf                           !filter observations
       read(iunit,*) green_mesh%optm, green_mesh%mext          !extend model length
+      read(iunit,*) green_mesh%wininv                         !number of time window to forward
       !For inversion ==== for_opt = 1
       close(iunit)
 

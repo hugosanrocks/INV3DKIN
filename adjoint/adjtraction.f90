@@ -1,4 +1,4 @@
-!--------------------------------------------------------
+!!--------------------------------------------------------
 !     3D Kinematic Seismic Source Inversion
 !     by an adjoint-state method
 !--------------------------------------------------------
@@ -105,7 +105,7 @@
       cont = 1
        do i=1,green_mesh%msub
         do j=1,green_mesh%nsta
-         sample = green_mesh%samwin(j,2)
+         sample = green_mesh%samwin(j,green_mesh%wininv)
         lenconv = green_mesh%trac_i + sample - 1   !syn_i = interp_i     sample = syn_i
          allocate(x(sample),z(lenconv),aux(sample))          !syn_i = interp_i= sample
         do m=1,green_mesh%ncomp
@@ -147,7 +147,6 @@
         deallocate(x,z,aux)
        enddo
       enddo
-print *, 'conv'
 !      do j = 1,green_mesh%nsta
 
 !========esto ya no debe ser necesarion=======      

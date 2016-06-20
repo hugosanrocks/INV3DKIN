@@ -114,6 +114,24 @@
 
 
 !===================================================!
+      ! inversion a priori options                                       !
+      ! 1 = start from slip-rate 0                                       !
+      ! 2 = start from a prior model                                     !
+      ! 3 = only for forward modeling resulting models                   !
+!===================================================!
+      if (green_mesh%for_opt .eq. 1) then
+        call coor_trans(green_mesh)
+        print *, ' Initial model from dat/vitesse.out'
+      elseif (green_mesh%for_opt .eq. 99) then
+        call read_model(green_mesh)
+        print *, ' Model read from dat/model.out'
+      else
+        call read_modelpri(green_mesh)
+        print *, ' Prior model read from dat/modelpri.dat'
+      endif
+!==================================================!
+
+!===================================================!
       call initializeadj(green_mesh)
 !===================================================!
 
@@ -145,7 +163,6 @@
       call read_time(green_mesh)
 !===================================================!
 
-
 !===================================================!
 !     Assuming a REALTIME picking (STALTA) detect   !
 !     time window for inversion. Now it only reads  !
@@ -153,26 +170,6 @@
 !===================================================!
       call windows(green_mesh)
 !===================================================!
-
-
-
-!===================================================!
-      ! inversion a priori options                                       !
-      ! 1 = start from slip-rate 0                                       !
-      ! 2 = start from a prior model                                     !
-      ! 3 = only for forward modeling resulting models                   !
-!===================================================!
-      if (green_mesh%for_opt .eq. 1) then
-        call coor_trans(green_mesh)
-        print *, ' Initial model from dat/vitesse.out'
-      elseif (green_mesh%for_opt .eq. 99) then
-        call read_modelf(green_mesh)
-        print *, ' Model here read from dat/model.out'
-      else
-        call read_modelpri(green_mesh)
-        print *, ' Prior model read from dat/modelpri.dat'
-      endif
-!==================================================!
 
 
 
@@ -205,16 +202,6 @@
 !===================================================!
 
        call read_grad(green_mesh)
-
-       call modeltimer(green_mesh)
-       print *, 'Cost: ', green_mesh%costa, 'Cost time: ',green_mesh%costm
-       green_mesh%costa = green_mesh%costa + &
-  &    green_mesh%lam1*green_mesh%costm
-       green_mesh%grad2(:) = green_mesh%grad2(:) + &
-  &    green_mesh%lam1*green_mesh%gradad(:)
-       print *, 'costa', green_mesh%costa
-
-
 
 !===================================================!
 !     OPTIMIZATION STRATEGY 

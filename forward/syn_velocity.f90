@@ -57,8 +57,10 @@
        integer bit, iunit, i,j,k,l
        integer*8 reclent
 
-       ! Bytes used for each element of traction vector (frequency)
-       INQUIRE(iolength=bit) green_mesh%tracf(1,1)
+       ! Bytes used for each element of traction vector (!frequency)
+!       INQUIRE(iolength=bit) green_mesh%tracf(1,1)
+ !      print *, bit, 'bit'
+       bit=1
        ! Total bytes used for traction matrix (frequency)
        reclent=bit*green_mesh%ncomp*green_mesh%trac_i*green_mesh%stcomp*green_mesh%msub
 
@@ -109,7 +111,7 @@
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
 !         !Stack the three convolutions X, Y, Z
-         green_mesh%syn(:,mm)=green_mesh%syn(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%samwin(j,2)) !interp_i = syn_i  changed
+         green_mesh%syn(:,mm)=green_mesh%syn(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%samwin(j,green_mesh%wininv)) !interp_i = syn_i  changed
                                                                                                                    !samwin = syn_i  2 june
          enddo     !Loop over 3 traction components
         enddo

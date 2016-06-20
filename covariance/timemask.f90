@@ -56,7 +56,7 @@
        !Nucleation is not penalize at first approach
        do i=1,9
        f(:,nuc(i)) = 1.
-       ind(nuc(i)) = 0
+       ind(nuc(i)) = 1
        enddo
        !ind(185) = 12
        !ind(186) = 6

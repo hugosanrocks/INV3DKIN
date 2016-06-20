@@ -48,7 +48,7 @@ GENERAL_OBJ = orderinv.o linreg.o conv.o ortogonal.o rotate.o modeldecomp.o inv_
 
 PREPROC_OBJ = preprocess.o readinfop.o mul_src.o stress_axi.o interpolation.o stress_dwn.o interp_axi.o interp_dwn.o traction.o normvec.o tract_fft.o medium.o
 
-OPTIM_OBJ = fcost.o fwi_option.o fwi_pstd.o fwi_lbfgs.o fwi_plbfgs.o fwi_pnlcg.o
+OPTIM_OBJ = fcost.o fwi_option.o fwi_pstd.o fwi_lbfgs.o fwi_plbfgs.o fwi_pnlcg.o prediction.o
 
 INIT_OBJ = initialize.o initializeadj.o readadjinfo.o modelcheck.o
 
@@ -62,7 +62,7 @@ MODEL_GRAD_OBJ = writemodel.o newgrad.o readgrad.o
 
 ALL_OBJ = $(INIT_OBJ) $(PREPROC_OBJ) $(GENERAL_OBJ) $(OPTIM_OBJ) $(MAIN_OBJ) $(FORWARD_OBJ) $(MODEL_GRAD_OBJ) $(ADJOINT_OBJ) $(COV_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ)
 
-FOR_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ) residual.o fcost.o mainforward.o writemodel.o $(INIT_OBJ) $(FORWARD_OBJ) $(GENERAL_OBJ)
+FOR_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) $(CAUSAL_OBJ) residual.o fcost.o mainforward.o writemodel_forw.o $(INIT_OBJ) $(FORWARD_OBJ) $(GENERAL_OBJ)
 
 PRE_OBJ = $(PREPROC_OBJ) $(FILTER_OBJ) linreg.o prep.o rotate.o
 

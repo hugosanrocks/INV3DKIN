@@ -149,8 +149,6 @@
       call model_d(green_mesh%model,green_mesh%model2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
  
 
-      call prediction(green_mesh)
-
       end subroutine read_modelpri
 
 
@@ -184,8 +182,6 @@
           enddo
          enddo
        enddo
-
-      !Set prediction here
 
 
       close(iunit)

@@ -71,13 +71,13 @@
        !Write synthetic seismogram ASCII file (used to check)
         open(iunit,file=green_mesh%out//'syn_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
     &   status='unknown')
-        do j=start,green_mesh%samwin(ii,2)
+        do j=start,green_mesh%samwin(ii,green_mesh%wininv)
          write(iunit,*) t, green_mesh%syn(j,k)
          t = t + dt
         enddo
        close(iunit) !Close writing units
        !Maximum values in the plot
-       maxamp  = maxval(abs(green_mesh%syn(1:green_mesh%samwin(ii,2),k)))
+       maxamp  = maxval(abs(green_mesh%syn(1:green_mesh%samwin(ii,green_mesh%wininv),k)))
        maxamp2 = maxval(abs(green_mesh%obs(:,k)))
        write(iunit3,*) '# PLOT_MAX = ', 1.3*maxamp2
        write(iunit3,*) '# T_START = ',  0.d0

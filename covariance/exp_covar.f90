@@ -63,7 +63,7 @@
        do i=1,5
         t = t + dt
         do j=1,green_mesh%msub
-           if (disthyp(j) .lt. t*4620.*0.7 ) then
+           if (disthyp(j) .lt. t*3100.*0.7 ) then
              front(j,i) = 1
            endif
         enddo

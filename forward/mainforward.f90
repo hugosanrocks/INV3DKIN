@@ -42,28 +42,20 @@
       !Read general information and prepare stress tensor files
       call read_info(green_mesh)
 
-      ! Option of forward modeling, from modulus (1) or 3D vector (2)
-      iunit=15
-      !Write information about synthetics
-      OPEN(iunit,file=green_mesh%dat//'syn.info',status='unknown')
-      read(iunit,*) green_mesh%for_opt
-      read(iunit,*) green_mesh%optf
-      close(iunit)
-
-
       call initialize(green_mesh)
 
+!===================================================!
       if (green_mesh%for_opt .eq. 1) then
-      call coor_trans(green_mesh)
-      elseif (green_mesh%for_opt .eq. 2) then
-      call read_modelf(green_mesh)
-      print *, ' Prior model read from dat/modelpri.dat'
-      elseif (green_mesh%for_opt .eq. 3) then
-      call read_model(green_mesh)
-      print *, ' Model read from dat/model.out'
+        call coor_trans(green_mesh)
+        print *, ' Initial model from dat/vitesse.out'
+      elseif (green_mesh%for_opt .eq. 99) then
+        call read_model(green_mesh)
+        print *, ' Model read from dat/model.out'
       else
-      write(*,*) ' Wrong forward option, check dat/syn.info'
+        call read_modelf(green_mesh)
+        print *, ' Prior model read from dat/modelpri.dat'
       endif
+!==================================================!
 
       !Read Green's functions
       call read_time(green_mesh)
@@ -87,26 +79,26 @@
 
       call write_model(green_mesh,green_mesh%model2,green_mesh%modelsize2)
 
-
-
-
+print *, 'here'
       deallocate(green_mesh%fault)
-
+print *,'fault'
       deallocate(green_mesh%slipmod)
       deallocate(green_mesh%model,green_mesh%model2,green_mesh%grad2)
       deallocate(green_mesh%tractionvec,green_mesh%syn,green_mesh%slipr)
       deallocate(green_mesh%slip)
-
+print *, 1
       deallocate(green_mesh%gradad,green_mesh%slipr2)
       deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm)
       deallocate(green_mesh%ce,green_mesh%ct,green_mesh%rtimes)
+      deallocate(green_mesh%rsamp,green_mesh%diag2)
       deallocate(green_mesh%diag)
       deallocate(green_mesh%la)
       deallocate(green_mesh%modelp)
       deallocate(green_mesh%model2p)
       deallocate(green_mesh%tseries)
       deallocate(green_mesh%samwin)
-
+      deallocate(green_mesh%synsam)
+print *, 2
       !Frequency domain
 !      deallocate(green_mesh%tracf,green_mesh%slipf)
 

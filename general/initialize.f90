@@ -69,17 +69,17 @@
       green_mesh%debug = .false. 
 
 
-      !1 Coordinate transformation (strike,dip,rake) to (x,y,z)
-      allocate(green_mesh%fault(green_mesh%msub,3))
-      !2 slipmod = matrix containing slip module for each subfualt
-      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
-      !interp_i = simsam    changed
-
       !1D vectors used for optimization toolbox
       green_mesh%interp_i = green_mesh%interp_i + green_mesh%mext
       print *, green_mesh%interp_i, 'interp_i'
       green_mesh%modelsize = green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
       green_mesh%modelsize2 = green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
+
+      !1 Coordinate transformation (strike,dip,rake) to (x,y,z)
+      allocate(green_mesh%fault(green_mesh%msub,3))
+      !2 slipmod = matrix containing slip module for each subfualt
+      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
+      !interp_i = simsam    changed
 
       !3 4 5
       allocate(green_mesh%model(green_mesh%modelsize))
@@ -158,6 +158,10 @@
       allocate(green_mesh%samwin(green_mesh%stcomp,3))
       !25
       allocate(green_mesh%synsam(green_mesh%nsta))
+      !26
+      allocate(green_mesh%idsub(green_mesh%msub),green_mesh%win(green_mesh%msub))
+
+
 
       end subroutine initialize
 
@@ -243,7 +247,8 @@
       deallocate(green_mesh%cost)
       deallocate(green_mesh%res)
       deallocate(green_mesh%tottrac)
-      
+      deallocate(green_mesh%idsub)
+      deallocate(green_mesh%win)
       !Frequency domain arrays
 !      deallocate(green_mesh%resif)
 !      deallocate(green_mesh%tracad)

@@ -44,8 +44,8 @@
       k = 1
       do i=1,green_mesh%nsta
         do j=1,green_mesh%ncomp
-          green_mesh%res(1:green_mesh%samwin(i,2),k) = &
-  &       green_mesh%syn(1:green_mesh%samwin(i,2),k) - green_mesh%obs(1:green_mesh%samwin(i,2),k)
+          green_mesh%res(1:green_mesh%samwin(i,green_mesh%wininv),k) = &
+  &       green_mesh%syn(1:green_mesh%samwin(i,green_mesh%wininv),k) - green_mesh%obs(1:green_mesh%samwin(i,green_mesh%wininv),k)
           k = k + 1
         enddo
       enddo
@@ -247,7 +247,7 @@
        open(iunit,file=green_mesh%dat//'weights.dat',status='old',action='read')
        k = 1
        do i=1,green_mesh%nsta
-        mm = green_mesh%samwin(i,2)
+        mm = green_mesh%samwin(i,green_mesh%wininv)
         read(iunit,*) weights
         allocate(weightm(mm,mm),resvect(1,mm))
         allocate(resvec(mm),vec(mm))

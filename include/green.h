@@ -63,6 +63,8 @@
        REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce, ct, la       ! Arrays to covariance matrices
        INTEGER weig
        REAL*4, DIMENSION(:),POINTER :: tseries                    ! Subfault's positions (x,y,z)
+       INTEGER wininv                                             ! Number of the time window to forward
+       INTEGER*4, DIMENSION(:), POINTER :: idsub, win
 
        END TYPE mesh
 

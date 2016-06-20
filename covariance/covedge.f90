@@ -20,7 +20,8 @@
          do i=1,2
           m=1+(i-1)* mm
           n=1+(i-1)* mm + mm - 1
-          print *, m, n, i
+          !parts of slip vector
+          !print *, m, n, i
           do j=1,green_mesh%interp_i
            vec(1:green_mesh%msub,1) = green_mesh%slipr2(j,m:n)
            vec2(1,:) = vec(:,1) 
@@ -38,9 +39,9 @@
          !print *, green_mesh%costm, 'costmm'
 
          !used only to check
-         do i=1,green_mesh%msub
-         write(33,*) vec(i,1)
-         enddo
+         !do i=1,green_mesh%msub
+         !write(33,*) vec(i,1)
+         !enddo
          !print *, 'model edge cost', green_mesh%costm
 
 
