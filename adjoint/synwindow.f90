@@ -6,7 +6,7 @@
       TYPE (mesh) :: green_mesh
 
       integer i, iunit, j, k
-      real*4  twin(green_mesh%nsta,3), reswin(green_mesh%interp_i,green_mesh%stcomp)
+      real*4  twin(green_mesh%nsta,green_mesh%wininv), reswin(green_mesh%interp_i,green_mesh%stcomp)
 
       iunit = 22
 
@@ -16,6 +16,7 @@
       do i= 1,green_mesh%nsta
         read(iunit,*) j, twin(i,:)
         green_mesh%samwin(i,:) = int(twin(i,:)/green_mesh%slipdt) + 1
+        print *, green_mesh%samwin(i,:)
       enddo
 
 

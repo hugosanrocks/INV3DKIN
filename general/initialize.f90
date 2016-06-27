@@ -70,27 +70,27 @@
 
 
       !1D vectors used for optimization toolbox
-      green_mesh%interp_i = green_mesh%interp_i + green_mesh%mext
-      print *, green_mesh%interp_i, 'interp_i'
-      green_mesh%modelsize = green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
-      green_mesh%modelsize2 = green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
+!      green_mesh%interp_i = green_mesh%interp_i + green_mesh%mext
+!      print *, green_mesh%interp_i, 'interp_i'
+!      green_mesh%modelsize = green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
+!      green_mesh%modelsize2 = green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
 
       !1 Coordinate transformation (strike,dip,rake) to (x,y,z)
       allocate(green_mesh%fault(green_mesh%msub,3))
       !2 slipmod = matrix containing slip module for each subfualt
-      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
+!      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
       !interp_i = simsam    changed
 
       !3 4 5
-      allocate(green_mesh%model(green_mesh%modelsize))
-      allocate(green_mesh%model2(green_mesh%modelsize2))
-      allocate(green_mesh%grad2(green_mesh%modelsize2))
+!      allocate(green_mesh%model(green_mesh%modelsize))
+!      allocate(green_mesh%model2(green_mesh%modelsize2))
+!      allocate(green_mesh%grad2(green_mesh%modelsize2))
 
       !slipr = matrix with (x,y,z) slip components for only 1 subfault
       !6
-      allocate(green_mesh%slipr(green_mesh%interp_i,green_mesh%ncomp))
+!      allocate(green_mesh%slipr(green_mesh%interp_i,green_mesh%ncomp))
       !7 Matrix with slip-rate time history in 3D for all subfaults
-      allocate(green_mesh%slip(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
+!      allocate(green_mesh%slip(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
 
       !8 tractionvec = matrix containing all traction vectors for only 1 subfault
       allocate(green_mesh%tractionvec(green_mesh%trac_i,&
@@ -100,7 +100,7 @@
       !lensyn = dimension of synthetic vectors
       !lensynf = dimension of synthetics in frequency
       !stcomp = total number of synthetics
-      green_mesh%lensyn=green_mesh%interp_i+green_mesh%trac_i-1
+!      green_mesh%lensyn=green_mesh%interp_i+green_mesh%trac_i-1
       green_mesh%stcomp=green_mesh%nsta*green_mesh%ncomp
 
 !=====TERMS USED IF CONVOLUTION PERFORMED IN THE FREQUENCY DOMAIN============!
@@ -114,15 +114,15 @@
 !============================================================================!
 
       !9
-      allocate(green_mesh%syn(green_mesh%lenobs,green_mesh%stcomp))   !interp_i = syn_sam    31 may
+!      allocate(green_mesh%syn(green_mesh%lenobs,green_mesh%stcomp))   !interp_i = syn_sam    31 may
                                                                       !syn_i = lenobs         2 june
       !interp_i = syn_i          changed
 
       !10
-      allocate(green_mesh%gradad(green_mesh%modelsize2))
+!      allocate(green_mesh%gradad(green_mesh%modelsize2))
       !allocate(green_mesh%tracad(green_mesh%lensyn, green_mesh%msub*2))
       !11
-      allocate(green_mesh%slipr2(green_mesh%interp_i,green_mesh%msub*2))
+!      allocate(green_mesh%slipr2(green_mesh%interp_i,green_mesh%msub*2))
 
       !syn = matrix to store observed seismograms at receivers (time)
       !12
@@ -144,23 +144,50 @@
       !19
       allocate(green_mesh%diag2(green_mesh%msub))
 !check this
-      allocate(green_mesh%diag(green_mesh%msub*green_mesh%interp_i))
+!      allocate(green_mesh%diag(green_mesh%msub*green_mesh%interp_i))
       !20
       allocate(green_mesh%la(green_mesh%msub,green_mesh%msub))
       !21
-      allocate(green_mesh%modelp(green_mesh%modelsize))
+!      allocate(green_mesh%modelp(green_mesh%modelsize))
       !22
-      allocate(green_mesh%model2p(green_mesh%modelsize2))
+!      allocate(green_mesh%model2p(green_mesh%modelsize2))
       !23
       allocate(green_mesh%tseries(green_mesh%lenobs))
       !interp_i = syn_i           filter the observations
       !24
-      allocate(green_mesh%samwin(green_mesh%stcomp,3))
+      allocate(green_mesh%samwin(green_mesh%stcomp,green_mesh%wininv))
       !25
       allocate(green_mesh%synsam(green_mesh%nsta))
       !26
-      allocate(green_mesh%idsub(green_mesh%msub),green_mesh%win(green_mesh%msub))
+      allocate(green_mesh%idsub(green_mesh%msub),green_mesh%win(green_mesh%msub,2))
 
+
+
+
+
+      !1D vectors used for optimization toolbox
+!      green_mesh%interp_i = green_mesh%interp_i + green_mesh%mext
+!      print *, green_mesh%interp_i, 'interp_i'
+!      green_mesh%modelsize = green_mesh%interp_i*green_mesh%ncomp*green_mesh%msub
+!      green_mesh%modelsize2 = green_mesh%interp_i*2*green_mesh%msub   !in 2D along dip and strike
+      !2 slipmod = matrix containing slip module for each subfualt
+!      allocate(green_mesh%slipmod(green_mesh%interp_i,green_mesh%msub))
+      !3 4 5
+!      allocate(green_mesh%model(green_mesh%modelsize))
+!      allocate(green_mesh%model2(green_mesh%modelsize2))
+!      allocate(green_mesh%grad2(green_mesh%modelsize2))
+      !slipr = matrix with (x,y,z) slip components for only 1 subfault
+      !6
+!      allocate(green_mesh%slipr(green_mesh%interp_i,green_mesh%ncomp))
+      !7 Matrix with slip-rate time history in 3D for all subfaults
+!      allocate(green_mesh%slip(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
+      !10
+!      allocate(green_mesh%gradad(green_mesh%modelsize2))
+      !11
+!      allocate(green_mesh%slipr2(green_mesh%interp_i,green_mesh%msub*2))
+!      allocate(green_mesh%modelp(green_mesh%modelsize))
+      !22
+!      allocate(green_mesh%model2p(green_mesh%modelsize2))
 
 
       end subroutine initialize

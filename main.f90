@@ -112,11 +112,9 @@
       call initialize(green_mesh)
 !===================================================!
 
-
 !===================================================!
       call initializeadj(green_mesh)
 !===================================================!
-
 
 !===================================================!
 !     INITIALIZE REGULARIZING MATRICES
@@ -128,7 +126,7 @@
        !call model_pri(green_mesh)
        !call laplacian(green_mesh)
       !Rupture time regularization
-      call exp_covar(green_mesh)
+!      call exp_covar(green_mesh)
        !Correlation in time
        !call time_corr(green_mesh)
        !Penalize slip at the borders of the fault
@@ -163,17 +161,42 @@
       ! 3 = only for forward modeling resulting models                   !
 !===================================================!
       if (green_mesh%for_opt .eq. 1) then
-        call coor_trans(green_mesh)
-        print *, ' Initial model from dat/vitesse.out'
+!        call coor_trans(green_mesh)
+!        print *, ' Initial model from dat/vitesse.out'
       elseif (green_mesh%for_opt .eq. 99) then
         call read_modelf(green_mesh)
         print *, ' Model here read from dat/model.out'
       else
+      do i = 1,green_mesh%wininv - 1
+       green_mesh%dowin = i 
+       green_mesh%synwin = i + 1
+       if (green_mesh%synwin .eq. 8) then
+       green_mesh%interp_i = 201
+       endif
+       call initwin(green_mesh)
+        call exp_covar(green_mesh)
         call read_modelpri(green_mesh)
         print *, ' Prior model read from dat/modelpri.dat'
+        !Number of windows growing the model space
+        call prediction(green_mesh)
+       call destroywin(green_mesh)
+      enddo
+
       endif
 !==================================================!
 
+       green_mesh%wininv = 2
+       !Revert increment of model space
+       green_mesh%mext = 0
+       print *, green_mesh%interp_i
+       call initwin(green_mesh)
+       if (green_mesh%for_opt .eq. 1) then
+         call coor_trans(green_mesh)
+         print *, ' Initial model from dat/vitesse.out'
+       endif
+       call exp_covar(green_mesh)
+!        call read_modelpri(green_mesh)
+        print *, ' Prior model read from dat/modelpri.dat'
 
 
 !===================================================!
@@ -207,6 +230,7 @@
        call read_grad(green_mesh)
 
        call modeltimer(green_mesh)
+       green_mesh%lam1=0.05
        print *, 'Cost: ', green_mesh%costa, 'Cost time: ',green_mesh%costm
        green_mesh%costa = green_mesh%costa + &
   &    green_mesh%lam1*green_mesh%costm
@@ -231,7 +255,7 @@
       ! slip and normal vector2
       !call ortogonal(green_mesh)
 
-
+       call destroywin(green_mesh)
       ! Destroy all the memory used
       call destroy_arrays(green_mesh)
 

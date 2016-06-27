@@ -44,8 +44,8 @@
       k = 1
       do i=1,green_mesh%nsta
         do j=1,green_mesh%ncomp
-          green_mesh%res(1:green_mesh%samwin(i,green_mesh%wininv),k) = &
-  &       green_mesh%syn(1:green_mesh%samwin(i,green_mesh%wininv),k) - green_mesh%obs(1:green_mesh%samwin(i,green_mesh%wininv),k)
+          green_mesh%res(1:green_mesh%samwin(i,green_mesh%synwin),k) = &
+  &       green_mesh%syn(1:green_mesh%samwin(i,green_mesh%synwin),k) - green_mesh%obs(1:green_mesh%samwin(i,green_mesh%synwin),k)
           k = k + 1
         enddo
       enddo

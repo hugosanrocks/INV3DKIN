@@ -26,6 +26,11 @@
        nuc(7)=234
        nuc(8)=235
        nuc(9)=236
+       do i=1,green_mesh%msub
+         if (green_mesh%rsamp(i) .le. 12) then
+            green_mesh%rsamp(i) = 1
+         endif
+       enddo
 
 
        allocate(matrix(sub,sub),t(tsam),f(tsam,sub))
@@ -54,18 +59,18 @@
        enddo
 
        !Nucleation is not penalize at first approach
-       do i=1,9
-       f(:,nuc(i)) = 1.
-       ind(nuc(i)) = 1
-       enddo
+!       do i=1,9
+!       f(:,nuc(i)) = 1.
+!       ind(nuc(i)) = 1
+!       enddo
        !ind(185) = 12
        !ind(186) = 6
 
-       do j=1,9
-        do i=1,tsam
-         f(i,nuc(j)) = exp(-1. * (t(i) - t(ind(nuc(j)))) / 0.04 )  !0.1 bueno !4 malo
-        enddo
-       enddo
+ !      do j=1,9
+ !       do i=1,tsam
+ !        f(i,nuc(j)) = exp(-1. * (t(i) - t(ind(nuc(j)))) / 0.04 )  !0.1 bueno !4 malo
+ !       enddo
+ !      enddo
 !       do i=1,875
 !        write(875,*) f(i,186)
 !       enddo
@@ -77,7 +82,7 @@
        do i=1,sub
         matrix(i,i) = f(j,i)
         green_mesh%diag(k) = f(j,i)
-        !write(99,*) green_mesh%diag(k)
+        write(99,*) green_mesh%diag(k)
         k=k+1
        enddo
        write(iunit,rec=j) matrix

@@ -71,7 +71,7 @@
       !lensynt = dimension of adjoint traction vectors
 
       !Save memory for traction arrays, total traction (gradient), cost and residuals
-      allocate(green_mesh%tottrac(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
+!      allocate(green_mesh%tottrac(green_mesh%interp_i,green_mesh%ncomp*green_mesh%msub))
       !allocate(green_mesh%tracad(green_mesh%lensyn,green_mesh%ncomp*green_mesh%msub))
       allocate(green_mesh%cost(green_mesh%ncomp*green_mesh%nsta))
       allocate(green_mesh%res(green_mesh%lenobs,green_mesh%stcomp))      !lenobs = syn_i

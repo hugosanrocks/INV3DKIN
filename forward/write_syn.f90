@@ -47,16 +47,18 @@
        write(green_mesh%sta,'(I3.3)') ii
        open(iunit3,file=green_mesh%out//'syn_S'//green_mesh%sta//'.win',&
     &  status='unknown')
-       write(iunit3,*) '# NUM_WIN = ', 2
-       write(iunit3,*) '1',real(green_mesh%samwin(ii,1:2))*dt,'0'
-       write(iunit3,*) '2',real(green_mesh%samwin(ii,2:3))*dt,'0'
+       write(iunit3,*) '# NUM_WIN = ', green_mesh%wininv-1
+       do jj=1,green_mesh%wininv-1
+       write(iunit3,*) jj,real(green_mesh%samwin(ii,jj:jj+1))*dt,'0'
+       enddo
        close(iunit3)
        open(iunit3,file=green_mesh%out//'syn_S'//green_mesh%sta//'.win.qual',&
     &  status='unknown')
-       write(iunit3,*) '# NUM_WIN = ', 2
+       write(iunit3,*) '# NUM_WIN = ', green_mesh%wininv-1
        write(iunit3,*) '# i win_start win_end Tshift CC dlnA'
-       write(iunit3,*) '1',real(green_mesh%samwin(ii,1:2))*dt,'0.00000    1.00000    0.00000'
-       write(iunit3,*) '2',real(green_mesh%samwin(ii,2:3))*dt,'0.00000    1.00000    0.00000'
+       do jj=1,green_mesh%wininv-1
+       write(iunit3,*) jj,real(green_mesh%samwin(ii,jj:jj+1))*dt,'0.00000    1.00000    0.00000'
+       enddo
        close(iunit3)
        do jj=1,green_mesh%ncomp
          t = 0.
@@ -71,7 +73,7 @@
        !Write synthetic seismogram ASCII file (used to check)
         open(iunit,file=green_mesh%out//'syn_S'//green_mesh%sta//'_C'//green_mesh%comp//'.ascii',&
     &   status='unknown')
-        do j=start,green_mesh%samwin(ii,green_mesh%wininv)
+        do j=start,green_mesh%samwin(ii,green_mesh%synwin)
          write(iunit,*) t, green_mesh%syn(j,k)
          t = t + dt
         enddo
@@ -79,9 +81,10 @@
        !Maximum values in the plot
        maxamp  = maxval(abs(green_mesh%syn(1:green_mesh%samwin(ii,green_mesh%wininv),k)))
        maxamp2 = maxval(abs(green_mesh%obs(:,k)))
-       write(iunit3,*) '# PLOT_MAX = ', 1.3*maxamp2
+       maxamp = max(maxamp,maxamp2)
+       write(iunit3,*) '# PLOT_MAX = ', 1.3*maxamp
        write(iunit3,*) '# T_START = ',  0.d0
-       write(iunit3,*) '# T_END = ',    15.0
+       write(iunit3,*) '# T_END = ',    34.9
        close(iunit3)
        write(iunit2,*) '# PLOT_MAX = ', 1.3*maxamp
        write(iunit2,*) '# T_START = ',  0.d0

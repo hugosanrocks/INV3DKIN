@@ -111,7 +111,7 @@
 !         !Discrete convolution term
           z(:)=z(:)*green_mesh%slipdt*scalfac
 !         !Stack the three convolutions X, Y, Z
-         green_mesh%syn(:,mm)=green_mesh%syn(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%samwin(j,green_mesh%wininv)) !interp_i = syn_i  changed
+         green_mesh%syn(:,mm)=green_mesh%syn(:,mm)+z(green_mesh%delays+1:green_mesh%delays+green_mesh%samwin(j,green_mesh%synwin)) !interp_i = syn_i  changed
                                                                                                                    !samwin = syn_i  2 june
          enddo     !Loop over 3 traction components
         enddo

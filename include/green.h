@@ -27,7 +27,7 @@
        INTEGER*4 nsta, ncomp, msub, nsubf, lensyn, lensynf,lenobs ! Number of: stations, components and subfaults, length of traces
        INTEGER*8 stcomp, sta_i, comp_i, mjump, prog            	  ! Counter on stations, components and staXcomp, jump inside files, prog bar
 
-       INTEGER*8 simsam, slipsam, interp_i, trac_i, syn_i
+       INTEGER*8 simsam, slipsam, interp_i, trac_i, syn_i, mod_i
        INTEGER*4 interpadj_i      	  			  ! Number of samples of: simulation, slip, forward interpolation, adjoint records
        INTEGER*4 delays, iter                              	  ! Number of samples of delay (due to origin time), number of  iteration
        INTEGER*4 modelsize, modelsize2                      	  ! number of samples in the model to optimize
@@ -63,9 +63,9 @@
        REAL*4, DIMENSION(:,:),POINTER :: cd, cm, ce, ct, la       ! Arrays to covariance matrices
        INTEGER weig
        REAL*4, DIMENSION(:),POINTER :: tseries                    ! Subfault's positions (x,y,z)
-       INTEGER wininv                                             ! Number of the time window to forward
-       INTEGER*4, DIMENSION(:), POINTER :: idsub, win
-
+       INTEGER wininv, dowin, synwin                                             ! Number of the time window to forward
+       INTEGER*4, DIMENSION(:), POINTER :: idsub
+       INTEGER*4, DIMENSION(:,:), POINTER :: win
        END TYPE mesh
 
 !---------------------

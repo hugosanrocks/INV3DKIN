@@ -105,7 +105,7 @@
       cont = 1
        do i=1,green_mesh%msub
         do j=1,green_mesh%nsta
-         sample = green_mesh%samwin(j,green_mesh%wininv)
+         sample = green_mesh%samwin(j,green_mesh%synwin)
         lenconv = green_mesh%trac_i + sample - 1   !syn_i = interp_i     sample = syn_i
          allocate(x(sample),z(lenconv),aux(sample))          !syn_i = interp_i= sample
         do m=1,green_mesh%ncomp

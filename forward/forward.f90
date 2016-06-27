@@ -40,7 +40,6 @@
        !Flush the array of synthetics
        green_mesh%syn(:,:) = 0.
 
-
        !Arrange the slip vector in a 3x1 vector
        k=1
        do i=1,green_mesh%msub          !number of subfaults  

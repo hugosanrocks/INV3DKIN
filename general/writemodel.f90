@@ -65,7 +65,7 @@
       integer :: iunit, iunit2, m, i, j, k
 
 
-      call coor_trans(green_mesh)
+      call coor_trans2(green_mesh)
       green_mesh%model(:) = 0.
       green_mesh%model2(:) = 0.
 
@@ -115,7 +115,7 @@
       integer :: iunit, iunit2, m, i, j, k
 
 
-      call coor_trans(green_mesh)
+      call coor_trans2(green_mesh)
       green_mesh%model(:) = 0.
       green_mesh%model2(:) = 0.
 
@@ -148,8 +148,8 @@
 
       call model_d(green_mesh%model,green_mesh%model2,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
  
-
-      call prediction(green_mesh)
+!PREDICTION USED TO BE HERE
+!      call prediction(green_mesh)
 
       end subroutine read_modelpri
 
@@ -164,12 +164,11 @@
       TYPE (mesh) :: green_mesh
 
 !     Variables needed only here
-      integer :: iunit, i, j, k, m, jump
+      integer :: iunit, i, j, k, m
 
       !Flush the array used to read prior model (slip-rate)
       green_mesh%model(:) = 0.
 
-      jump = 151 - 75         !to be changed
 
        iunit=22
        OPEN(iunit,FILE=green_mesh%dat//'model.out',&

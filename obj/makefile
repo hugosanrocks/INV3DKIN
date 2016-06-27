@@ -44,13 +44,13 @@ FILTER_OBJ  =  init_butterworth.o filtfilt_butterworth.o
 
 CAUSAL_OBJ  =  synwindow.o
 
-GENERAL_OBJ = orderinv.o linreg.o conv.o ortogonal.o rotate.o modeldecomp.o inv_mat.o
+GENERAL_OBJ = orderinv.o linreg.o conv.o ortogonal.o rotate.o modeldecomp.o inv_mat.o interplib.o
 
 PREPROC_OBJ = preprocess.o readinfop.o mul_src.o stress_axi.o interpolation.o stress_dwn.o interp_axi.o interp_dwn.o traction.o normvec.o tract_fft.o medium.o
 
 OPTIM_OBJ = fcost.o fwi_option.o fwi_pstd.o fwi_lbfgs.o fwi_plbfgs.o fwi_pnlcg.o prediction.o
 
-INIT_OBJ = initialize.o initializeadj.o readadjinfo.o modelcheck.o
+INIT_OBJ = initialize.o initializeadj.o readadjinfo.o modelcheck.o initwin.o
 
 MAIN_OBJ  = main.o
 

@@ -15,29 +15,24 @@
 
         green_mesh%idsub(:) = 0              !Order of subfaults to predict
 
-        iunit=25
-        open(iunit,file=green_mesh%dat//'front.data',status='old',&
-  &          action='read')
         !Read form file and identify the subfaults where
         !the prediction will be done
         cont = 0
         j = 0
         do i=1,green_mesh%msub
-          read(iunit,*) green_mesh%win(i)
-          if (green_mesh%win(i) .eq. 1) then
+          if (green_mesh%win(i,1) .le. green_mesh%dowin) then
              cont = cont + 1
           else
              j = j + 1
              green_mesh%idsub(j) = i
           endif
         enddo
-        close(iunit)
-
+print *, cont, 'cont'
                  !subf * comp * samples
-        predsize = j * 2 * green_mesh%interp_i
+        predsize = cont * 2 * (green_mesh%interp_i)
+print *, predsize, 'predsize'
+
         allocate(model(predsize),grad(predsize))
-
-
 
 !===================================================!
 !     Forward and adjoint using the full model
@@ -45,15 +40,24 @@
       call forward(green_mesh)
       call adjoint(green_mesh)
       call read_grad(green_mesh)
-      print *, green_mesh%costa, 'INITIAL COST'
+       call modeltimer(green_mesh)
+       print *, 'Cost: ', green_mesh%costa, 'Cost time: ',green_mesh%costm
+       green_mesh%lam1=0.05
+       green_mesh%costa = green_mesh%costa + &
+  &    green_mesh%lam1*green_mesh%costm
+       green_mesh%grad2(:) = green_mesh%grad2(:) + &
+  &    green_mesh%lam1*green_mesh%gradad(:)
+       print *, 'costa', green_mesh%costa
+       print *, green_mesh%costa, 'INITIAL COST'
 !===================================================!
 
       !Arrange slip rate model in 1D vector
       !Remove subfaults not to update
       l = 1
       do i=1,green_mesh%msub
-        if (green_mesh%win(i) .ne. 1) then
+        if (green_mesh%win(i,1) .le. green_mesh%dowin) then
           cont=1+(i-1)*2*green_mesh%interp_i
+!          print *, i, cont, l
           !Remove subfaults not to be updated
           do j=1,2
             do k=1,green_mesh%interp_i
@@ -73,7 +77,7 @@
       !Insert back the subfaults that were removed
       l = 1
       do i=1,green_mesh%msub
-        if (green_mesh%win(i) .ne. 1) then
+        if (green_mesh%win(i,1) .le. green_mesh%dowin) then
           cont=1+(i-1)*2*green_mesh%interp_i
 !          print *, 'back mod',cont, 'cut mod',l, i
           !Decompose slip vector along stk and along dip = 2 directions
@@ -92,7 +96,7 @@
           do j=1,2
             do k=1,green_mesh%interp_i
               green_mesh%model2(cont) = green_mesh%model2(cont)
-              green_mesh%grad2(cont) = grad(cont)
+              green_mesh%grad2(cont) = green_mesh%grad2(cont)
               cont = cont + 1
             enddo
           enddo
@@ -101,6 +105,7 @@
 
       !Write last slip-rate aproximation
       call write_model(green_mesh,green_mesh%model2,green_mesh%modelsize2)
+ print *, 'wrote model'
       call write_syn(green_mesh)
 
        deallocate(model,grad)
@@ -136,20 +141,15 @@
 !####### Initialize values ################################        
          n=predsize              ! dimension
          FLAG='INIT'             ! first flag
-         optim%conv=1e-8         ! tolerance for the stopping criterion
+         if (green_mesh%dowin .le. 1) then
+         optim%conv=4e-02         ! tolerance for the stopping criterion
+         elseif (green_mesh%dowin .gt. 1) then
+         optim%conv=9e-02
+         endif
          optim%print_flag=1      ! print info in output files 
          optim%debug=.false.     ! level of details for output files
          optim%l=20
-         optim%niter_max=100
-
-
-!maybe needed
-!         call read_grad(green_mesh)
-
-!
-!       green_mesh%grad2(:) = green_mesh%grad2(:) + &
-!  &    green_mesh%lam1*green_mesh%gradad(:)
-
+         optim%niter_max=50
 
          grad_preco(:) = grad(:)
 
@@ -200,7 +200,7 @@
       !Insert back the subfaults that were removed
       l = 1
       do i=1,green_mesh%msub
-        if (green_mesh%win(i) .ne. 1) then
+        if (green_mesh%win(i,1) .le. green_mesh%dowin) then
           cont=1+(i-1)*2*green_mesh%interp_i
 !          print *, 'back mod',cont, 'cut mod',l, i
           !Decompose slip vector along stk and along dip = 2 directions
@@ -214,12 +214,11 @@
           enddo
         else
           cont = 1+(i-1)*2*green_mesh%interp_i
-!          print *, 'back mod',cont, 'from  mod',cont, i
           !Decompose slip vector along stk and along dip = 2 directions
           do j=1,2
             do k=1,green_mesh%interp_i
               green_mesh%model2(cont) = green_mesh%model2(cont)
-              green_mesh%grad2(cont) = grad(cont)
+              green_mesh%grad2(cont) = green_mesh%grad2(cont)
               cont = cont + 1
             enddo
           enddo
@@ -228,17 +227,13 @@
 
         !compose the slip for convolutions (x,y,z)!
         call model_c(green_mesh%model2,green_mesh%model,green_mesh%interp_i,green_mesh%msub,green_mesh%slipm)
-
         allocate(g(green_mesh%msub*green_mesh%ncomp*green_mesh%interp_i))
 
          call forward(green_mesh)
-
          !Compute residuals for all stations and components
          call residual(green_mesh)
-
          !TIME DOMAIN GRADIENT COMPUTATION
          call conadjtime(green_mesh)
-
        green_mesh%grad2(:)=0.
        g(:)=0.
        !Rearrange model and gradient info in a vector
@@ -284,7 +279,7 @@
       !Remove subfaults not to update
       l = 1
       do i=1,green_mesh%msub
-        if (green_mesh%win(i) .ne. 1) then
+        if (green_mesh%win(i,1) .le. green_mesh%dowin) then
           cont=1+(i-1)*2*green_mesh%interp_i
           !Remove subfaults not to be updated
           do j=1,2

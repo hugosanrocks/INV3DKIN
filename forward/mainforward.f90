@@ -43,6 +43,7 @@
       call read_info(green_mesh)
 
       call initialize(green_mesh)
+      call initwin(green_mesh)
 
 !===================================================!
       if (green_mesh%for_opt .eq. 1) then
@@ -79,14 +80,11 @@
 
       call write_model(green_mesh,green_mesh%model2,green_mesh%modelsize2)
 
-print *, 'here'
       deallocate(green_mesh%fault)
-print *,'fault'
       deallocate(green_mesh%slipmod)
       deallocate(green_mesh%model,green_mesh%model2,green_mesh%grad2)
       deallocate(green_mesh%tractionvec,green_mesh%syn,green_mesh%slipr)
       deallocate(green_mesh%slip)
-print *, 1
       deallocate(green_mesh%gradad,green_mesh%slipr2)
       deallocate(green_mesh%obs,green_mesh%cd,green_mesh%cm)
       deallocate(green_mesh%ce,green_mesh%ct,green_mesh%rtimes)
@@ -98,7 +96,7 @@ print *, 1
       deallocate(green_mesh%tseries)
       deallocate(green_mesh%samwin)
       deallocate(green_mesh%synsam)
-print *, 2
+      deallocate(green_mesh%win)
       !Frequency domain
 !      deallocate(green_mesh%tracf,green_mesh%slipf)
 

@@ -39,13 +39,13 @@
       integer i
       real start, fini
 
-
+print *, green_mesh%lenobs, 'obs'
          !Read observed seismograms at stations
          call read_obs(green_mesh)
-
+print *, 'here'
          !Compute residuals for all stations and components
         call residual(green_mesh)
-
+print *, 'out'
          !Flush the array to store total traction
          green_mesh%tottrac(:,:)=0.
 
